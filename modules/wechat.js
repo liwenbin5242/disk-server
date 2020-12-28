@@ -1,3 +1,4 @@
+const config = require('config');
 const host = config.get('host');
 const xml2js = require('xml2js');
 const handler = require('../utils/handler');
