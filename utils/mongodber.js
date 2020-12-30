@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-let MongoClient = require('mongodb').MongoClient;
+let { MongoClient } = require('mongodb');
 
 /*
  * Mongodber class
