@@ -7,37 +7,26 @@ const axios = require('axios');
 const md5 = require('crypto').createHash('md5');
 const _ = require('lodash');
 
-const wechat = require('../modules/wechat');
 const mongodber = require('../utils/mongodber');
+const returnCode = require('../utils/returnCodes');
 const wecahtDB = mongodber.use('wechat');
 
 const wechatServ = require('../modules/wechat')
 
-wecahtDB.collection('account').findOne({},(err, result) => {
-    global.Authorization = result.Authorization;
-    global.wId = result.wId;
-});
 
-
-
-const RESP = {
-    code:0,
-    data: {},
-    msg:''
-};
 /* 登录获取Authorization*/
 router.post('/member/login',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, req.body);
-    Authorization = result.data.data.Authorization;
-    await wecahtDB.collection('account').updateMany({},{$set:{Authorization}});
-    res.json(RESP);
+    const {account, password} = req.body;
+    const result = await wechatServ.postMemberLogin(account, password);
+   
+    res.json({code: returnCode.SUCCESS, msg:'', data: result});
 });
 
 /**
  * get Qrcode
  */
 router.post('/iPadLogin',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, req.body, {headers: {Authorization}});
+    const result = await axios.post(host+ req.path, req.body, {headers: {Authorization: req.headers.Authorization}});
     const code = result.data;
     wId = result.data.data.wId;
     await wecahtDB.collection('account').updateMany({},{$set:{wId}});
@@ -48,7 +37,7 @@ router.post('/iPadLogin',async function(req, res, next) {
  * login
  */
 router.post('/getIPadLoginInfo',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, {wId}, {headers: {Authorization}});
+    const result = await axios.post(host+ req.path, {headers: {Authorization}});
     const code = result.data
     res.json(code)
 });
@@ -68,6 +57,13 @@ router.post('/initAddressList',async function(req, res, next) {
 router.post('/getAddressList',async function(req, res, next) {
     const result = await axios.post(host+ req.path, {wId}, {headers: {Authorization}});
     const code = result.data
+    const friends = code.friends;
+    for(let wcId of friends) {
+        const friend = await wecahtDB.collection('friends').findOne({wcId: wcId});
+        if(!friend) {
+
+        }
+    }
     res.json(code)
 });
 
@@ -84,7 +80,7 @@ router.post('/secondLogin',async function(req, res, next) {
  * 获取好友朋友圈
  */
 router.post('/getFriendCircle',async function(req, res, next) {
-    return wechatServ.getFriendCircle();
+    return wechatServ.saveFriendCircle(wId, 'wxid_dl8pirdlyr7812', '', '',);
 });
 
 /**

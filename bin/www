@@ -14,16 +14,14 @@ async function initDb() {
   // 初始化数据库连接
   await initDb();
   const app = require('../app');
-  const port = process.env.PORT || config.get('PORT');
+  const port = config.get('PORT');
   app.set('port', port);
   const server = http.createServer(app);
   server.listen(port);
   server.on('error', onError);
   const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  console.log('Listening on ' + bind);
+
+  console.log('Listening on ' + port);
 })();
 
 
@@ -36,9 +34,7 @@ function onError(error) {
     throw error;
   }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = config.get('PORT');
 
   // handle specific listen errors with friendly messages
   switch (error.code) {

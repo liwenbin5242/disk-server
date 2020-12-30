@@ -6,11 +6,10 @@ const logger = require('morgan');
 
 
 const wechatRouter = require('./routes/wechat');
-const usersRouter = require('./routes/users');
+const tiebaRouter = require('./routes/tieba');
 
 const app = express();
-global.Authorization = '';
-global.wId = '';
+
 // view engine setup
 
 app.use(logger('dev'));
@@ -20,7 +19,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', wechatRouter);
-app.use('/users', usersRouter);
+app.use('/tieba', tiebaRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
