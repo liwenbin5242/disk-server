@@ -9,38 +9,35 @@ const _ = require('lodash');
 
 const mongodber = require('../utils/mongodber');
 const returnCode = require('../utils/returnCodes');
+const {reqHandler} = require('../utils/reqHandler');
+const {handler} = require('../utils/handler');
 const wecahtDB = mongodber.use('wechat');
 
 const wechatServ = require('../modules/wechat')
 
 
 /* 登录获取Authorization*/
-router.post('/member/login',async function(req, res, next) {
+router.post('/member/login', reqHandler(async function(req, res, next) {
     const {account, password} = req.body;
     const result = await wechatServ.postMemberLogin(account, password);
-   
-    res.json({code: returnCode.SUCCESS, msg:'', data: result});
-});
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+}));
 
 /**
  * get Qrcode
  */
-router.post('/iPadLogin',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, req.body, {headers: {Authorization: req.headers.Authorization}});
-    const code = result.data;
-    wId = result.data.data.wId;
-    await wecahtDB.collection('account').updateMany({},{$set:{wId}});
-    res.json(code);
-});
+router.post('/iPadLogin', reqHandler(async function(req, res, next) {
+    const result = await wechatServ.postiPadLogin();
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+}));
 
 /**
  * login
  */
-router.post('/getIPadLoginInfo',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, {headers: {Authorization}});
-    const code = result.data
-    res.json(code)
-});
+router.post('/getIPadLoginInfo',reqHandler(async function(req, res, next) {
+    const result = await wechatServ.getIPadLoginInfo()
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+}));
 
 /**
  * 初始化通讯录列表
@@ -90,4 +87,11 @@ router.post('/isOnline',async function(req, res, next) {
     return wechatServ.getIsOnline(wId, Authorization);
 });
 
+/**
+ * 查询微信是否在线
+ */
+router.post('/queryLoginWx',async function(req, res, next) {
+    const result = wechatServ.queryLoginWx();
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
 module.exports = router;

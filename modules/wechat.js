@@ -3,7 +3,8 @@ const axios = require('axios');
 const host = config.get('host');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
-const handler = require('../utils/handler');
+
+const {handler} = require('../utils/handler');
 
 const crypto = require('crypto');
 const hash = crypto.createHash('md5')
@@ -16,16 +17,31 @@ const wecahtDB = mongodber.use('wechat');
  * @param {密码} password 可选
  */
 async function postMemberLogin(account, password) {
+    const returnData = {};
     account = account || config.get('account');
     password = password || config.get('password');
-    const result = await axios.post(`${host}/member/login`, {account, password});
-    const userAccount = await wecahtDB.collection('account').findOne({account});
+    const result = await axios.post(`${host}/member/login`, {account, password}).then(response => {return handler(response)});
+
+    const userAccount = await wecahtDB.collection('user').findOne({account, Authorization: result.Authorization});
     if (!userAccount) {
-        await wecahtDB.collection('account').insert(result.data.data);
+        await wecahtDB.collection('user').insertOne(result);
     }
-    return {}
+    return returnData
 }
 
+/**
+ * 获取登录二维码
+ */
+async function postiPadLogin() {
+    const returnData = {};
+    const {Authorization, wcId} = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/iPadLogin`, {wcId: wcId,type: 2}, {headers: {Authorization}}).then(response => {return handler(response)});;
+    const wId = result.wId;
+    returnData.wId = wId;
+    returnData.qrCodeUrl = result.qrCodeUrl
+    await wecahtDB.collection('user').updateOne({account: config.get('account'), Authorization},{$set:{wId}});
+    return returnData;
+}
 /**
  * 
  * @param {登录实例id} wId 
@@ -51,14 +67,53 @@ async function saveFriendCircle(wId, wcId, firstPageMd5, maxId) {
  * @param {登录实例id} wId 
  * @param {认证信息} Authorization 
  */
-async function getIsOnline(wId, Authorization,) {
+async function getIsOnline() {
 
-    const result = await axios.post(host+ '/isOnline', {wId}, {headers: {Authorization}}).then(handler);
-    return result.isOnline
+}
+
+
+/**
+ * 保存目标群组消息
+ */
+async function saveAimcircle() {
+
+}
+
+async function queryLoginWx() {
+    let returnData = {};
+    const {Authorization} = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/queryLoginWx`, {} ,{headers: {Authorization}}).then(response => {return handler(response)});
+    returnData = result;
+    return returnData
+}
+
+async function secondLogin() {
+    let returnData = {};
+    const {Authorization, } = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/queryLoginWx`, {} ,{headers: {Authorization}}).then(response => {return handler(response)});
+    returnData = result;
+    return returnData
+}
+
+/**
+ * 获取登录信息 扫描二维码后需获取
+ */
+async function getIPadLoginInfo() {
+    let returnData = {};
+    const {Authorization, wId} = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    await wecahtDB.collection('userInfo').updateOne({wId},{$set:result},{upsert: true})
+    returnData = result;
+    return returnData
 }
 
 module.exports = {
     postMemberLogin,
+    postiPadLogin,
     saveFriendCircle,
-    getIsOnline
+    getIsOnline,
+    saveAimcircle,
+    queryLoginWx,
+    secondLogin,
+    getIPadLoginInfo
 }

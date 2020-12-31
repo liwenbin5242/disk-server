@@ -6,5 +6,6 @@ module.exports = {
     MONGODBS: {
         wechat:'mongodb://127.0.0.1:27017/wechat?poolSize=20&useNewUrlParser=true'
     },
-
+    GROUP_NAME: 'knowledgeGroup',
+    ROOM_NAME: '冲冲冲'
 }
