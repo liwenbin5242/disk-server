@@ -1,5 +1,5 @@
 const mongodber = require('../utils/mongodber');
-const wecahtDB = mongodber.use('wechat');
+const wechatDB = mongodber.use('wechat');
 
 
 /**

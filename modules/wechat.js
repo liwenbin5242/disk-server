@@ -9,7 +9,7 @@ const {handler} = require('../utils/handler');
 const crypto = require('crypto');
 const hash = crypto.createHash('md5')
 const mongodber = require('../utils/mongodber');
-const wecahtDB = mongodber.use('wechat');
+const wechatDB = mongodber.use('wechat');
 
 /**
  * 登录开放平台（第一步）
@@ -22,9 +22,9 @@ async function postMemberLogin(account, password) {
     password = password || config.get('password');
     const result = await axios.post(`${host}/member/login`, {account, password}).then(response => {return handler(response)});
 
-    const userAccount = await wecahtDB.collection('user').findOne({account, Authorization: result.Authorization});
+    const userAccount = await wechatDB.collection('user').findOne({account, Authorization: result.Authorization});
     if (!userAccount) {
-        await wecahtDB.collection('user').insertOne(result);
+        await wechatDB.collection('user').insertOne(result);
     }
     return returnData
 }
@@ -34,12 +34,12 @@ async function postMemberLogin(account, password) {
  */
 async function postiPadLogin() {
     const returnData = {};
-    const {Authorization, wcId} = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const {Authorization, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/iPadLogin`, {wcId: wcId,type: 2}, {headers: {Authorization}}).then(response => {return handler(response)});;
     const wId = result.wId;
     returnData.wId = wId;
     returnData.qrCodeUrl = result.qrCodeUrl
-    await wecahtDB.collection('user').updateOne({account: config.get('account'), Authorization},{$set:{wId}});
+    await wechatDB.collection('user').updateOne({account: config.get('account'), Authorization},{$set:{wId}});
     return returnData;
 }
 /**
@@ -58,7 +58,7 @@ async function saveFriendCircle(wId, wcId, firstPageMd5, maxId) {
             result
         })
         // sns.objectDesc = jsonData;
-        await wecahtDB.collection('friendCircleMSG').insert(sns)
+        await wechatDB.collection('friendCircleMSG').insert(sns)
     }
 }
 
@@ -81,7 +81,7 @@ async function saveAimcircle() {
 
 async function queryLoginWx() {
     let returnData = {};
-    const {Authorization} = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const {Authorization} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/queryLoginWx`, {} ,{headers: {Authorization}}).then(response => {return handler(response)});
     returnData = result;
     return returnData
@@ -89,7 +89,7 @@ async function queryLoginWx() {
 
 async function secondLogin() {
     let returnData = {};
-    const {Authorization, } = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const {Authorization, } = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/queryLoginWx`, {} ,{headers: {Authorization}}).then(response => {return handler(response)});
     returnData = result;
     return returnData
@@ -100,11 +100,77 @@ async function secondLogin() {
  */
 async function getIPadLoginInfo() {
     let returnData = {};
-    const {Authorization, wId} = await wecahtDB.collection('user').findOne({account: config.get('account')});
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
-    await wecahtDB.collection('userInfo').updateOne({wId},{$set:result},{upsert: true})
+    await wechatDB.collection('userInfo').updateOne({wId},{$set:result},{upsert: true})
     returnData = result;
     return returnData
+}
+
+/**
+ * 通讯录初始化
+ */
+async function initAddressList() {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/initAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    returnData = result;
+    return returnData || {};
+}
+
+/**
+ * 获取通讯录
+ */
+async function getAddressList() {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/getAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    returnData = result;
+    await wechatDB.collection('friends').updateOne({wId}, {$set:result}, {upsert: true});
+    return returnData || {};
+}
+
+/**
+ * 获取标签列表
+ */
+async function getContactLabelList() {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/getContactLabelList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    returnData.labelList = result;
+    returnData.wId = wId;
+    await wechatDB.collection('friends').updateOne({wId}, {$set:returnData}, {upsert: true});
+    return returnData || {};
+}
+
+/**
+ * 获取标签下好友列表
+ */
+async function getLabelContacts(labelId) {
+    let returnData = {
+        list: []
+    };
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/getLabelContacts`, {wId, labelId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    returnData.list = result;
+    return returnData || {};
+}
+
+/**
+ * 获取肉鸡的朋友圈
+ */
+async function getFriendCircle() {
+    let returnData = {
+        list: []
+    };
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    
+    const {list} = await getLabelContacts('1');
+    for(let i of list) {
+
+    }
+    returnData.list = result;
+    return returnData || {};
 }
 
 module.exports = {
@@ -115,5 +181,10 @@ module.exports = {
     saveAimcircle,
     queryLoginWx,
     secondLogin,
-    getIPadLoginInfo
+    getIPadLoginInfo,
+    initAddressList,
+    getAddressList,
+    getContactLabelList,
+    getLabelContacts,
+    getFriendCircle
 }

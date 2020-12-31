@@ -11,7 +11,7 @@ const mongodber = require('../utils/mongodber');
 const returnCode = require('../utils/returnCodes');
 const {reqHandler} = require('../utils/reqHandler');
 const {handler} = require('../utils/handler');
-const wecahtDB = mongodber.use('wechat');
+const wechatDB = mongodber.use('wechat');
 
 const wechatServ = require('../modules/wechat')
 
@@ -43,25 +43,33 @@ router.post('/getIPadLoginInfo',reqHandler(async function(req, res, next) {
  * 初始化通讯录列表
  */
 router.post('/initAddressList',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, {wId}, {headers: {Authorization}});
-    const code = result.data
-    res.json(code)
+    const result = await wechatServ.initAddressList()
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
 /**
  * 获取通讯录列表（好友、群、公众号）
  */
 router.post('/getAddressList',async function(req, res, next) {
-    const result = await axios.post(host+ req.path, {wId}, {headers: {Authorization}});
-    const code = result.data
-    const friends = code.friends;
-    for(let wcId of friends) {
-        const friend = await wecahtDB.collection('friends').findOne({wcId: wcId});
-        if(!friend) {
+    const result = await wechatServ.getAddressList()
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
 
-        }
-    }
-    res.json(code)
+/**
+ * 获取标签列表
+ */
+router.post('/getContactLabelList',async function(req, res, next) {
+    const result = await wechatServ.getContactLabelList()
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
+
+
+/**
+ * 获取标签下的联系人
+ */
+router.post('/getLabelContacts',async function(req, res, next) {
+    const result = await wechatServ.getLabelContacts('1')
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
 /**
