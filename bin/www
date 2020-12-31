@@ -21,7 +21,7 @@ async function initDb() {
   server.on('error', onError);
   const addr = server.address();
 
-  console.log('Listening on ' + port);
+  console.info('Listening on ' + port);
 })();
 
 

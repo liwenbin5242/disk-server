@@ -4,7 +4,7 @@ const host = config.get('host');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
 const handler = require('../utils/handler');
-const axios = require('axios');
+
 const crypto = require('crypto');
 const hash = crypto.createHash('md5')
 const mongodber = require('../utils/mongodber');

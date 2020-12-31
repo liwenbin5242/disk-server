@@ -13,8 +13,9 @@ Mongodber.prototype.init = async function (dbs_conf) {
     let promises = Object.keys(dbs_conf).map(name => (async () => {
         console.log(`init ${name}`);
         let db_url = dbs_conf[name];
+        MongoClient = new MongoClient(db_url, {useUnifiedTopology: true})
         try {
-            this.dbs[name] = await MongoClient.connect(db_url, {useNewUrlParser: true, minSize: 10});
+            this.dbs[name] = await MongoClient.connect();
         } catch (e) {
             throw new Error(`Init ${name} failed: ${e.message}`);
         }

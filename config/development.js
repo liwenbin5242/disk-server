@@ -4,7 +4,7 @@ module.exports = {
     account: '15810185602',
     password: '123456',
     MONGODBS: {
-        wechat:'mongodb://127.0.0.1:27017/wechat'
+        wechat:'mongodb://127.0.0.1:27017/wechat?poolSize=20&useNewUrlParser=true'
     },
 
 }
