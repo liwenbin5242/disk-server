@@ -66,8 +66,10 @@ async function saveFriendCircle(wId, wcId, firstPageMd5, maxId) {
  * @param {登录实例id} wId 
  * @param {认证信息} Authorization 
  */
-async function getIsOnline() {
-
+async function getIsOnline(wId, Authorization,) {
+    const result = await axios.post(`${host}/getIsOnline`, {wId} ,{headers: {Authorization}}).then(response => {return handler(response)});
+    returnData = result;
+    return returnData
 }
 
 

@@ -93,7 +93,7 @@ router.post('/getRoujiFriendCircle',async function(req, res, next) {
  * 查询微信是否在线
  */
 router.post('/isOnline',async function(req, res, next) {
-    return wechatServ.getIsOnline(wId, Authorization);
+    return wechatServ.getIsOnline(req.body.wId, req.header.authorization);
 });
 
 /**
