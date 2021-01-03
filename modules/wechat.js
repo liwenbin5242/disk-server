@@ -192,8 +192,7 @@ async function getFriendCircle(wcId, firstPageMd5, maxId) {
  */
 async function postRoujiFriendCircleToRoom(chatRoomId) {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    // const time = (new Date()).getTime() - 30 * 60 * 1000;
-    const time = (new Date()).getTime() - 60 * 60 * 1000 * 300;
+    const time = (new Date()).getTime() - 30 * 60 * 1000;
     const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time/1000}}).toArray();
     for( let content of contents) {
         const jsonData = await new Promise((resolve, reject)=> {
@@ -206,7 +205,7 @@ async function postRoujiFriendCircleToRoom(chatRoomId) {
             setTimeout(async()=> {
                 const result = await axios.post(`${host}/sendText`, {wId, wcId:chatRoomId, content}, {headers: {Authorization}}).then(response => {return handler(response)});
                 resolve(result)
-            }, 6000)
+            },  Math.random()* 50000)
         })
         result
     }

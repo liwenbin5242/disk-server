@@ -13,7 +13,7 @@ async function getText() {
  * 外部接口调用,获取最新内容
  */
 async function getTitle() {
-
+    await wechatDB.collection('');
 }
 
 /**
