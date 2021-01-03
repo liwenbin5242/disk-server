@@ -82,10 +82,11 @@ router.post('/secondLogin',async function(req, res, next) {
 });
 
 /**
- * 获取好友朋友圈
+ * 获取肉鸡好友朋友圈
  */
-router.post('/getFriendCircle',async function(req, res, next) {
-    return wechatServ.saveFriendCircle(wId, 'wxid_dl8pirdlyr7812', '', '',);
+router.post('/getRoujiFriendCircle',async function(req, res, next) {
+    const result = await wechatServ.getRoujiFriendCircle()
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
 /**
@@ -100,6 +101,14 @@ router.post('/isOnline',async function(req, res, next) {
  */
 router.post('/queryLoginWx',async function(req, res, next) {
     const result = wechatServ.queryLoginWx();
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
+
+/**
+ * 发送消息到冲冲冲
+ */
+router.post('/RoujiFriendCircleToRoom',async function(req, res, next) {
+    const result = wechatServ.postRoujiFriendCircleToRoom();
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 module.exports = router;

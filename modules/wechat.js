@@ -7,7 +7,6 @@ const parser = new xml2js.Parser();
 const {handler} = require('../utils/handler');
 
 const crypto = require('crypto');
-const hash = crypto.createHash('md5')
 const mongodber = require('../utils/mongodber');
 const wechatDB = mongodber.use('wechat');
 
@@ -157,22 +156,48 @@ async function getLabelContacts(labelId) {
 }
 
 /**
- * 获取肉鸡的朋友圈
+ * 保存肉鸡的朋友圈
  */
-async function getFriendCircle() {
-    let returnData = {
-        list: []
-    };
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    
+async function getRoujiFriendCircle() {
+    let returnData = {};
     const {list} = await getLabelContacts('1');
     for(let i of list) {
-
+        const results = await getFriendCircle(i.userName);
+        for (let sns of results.sns) {
+            const md5 = crypto.createHash('md5').update(JSON.stringify(sns.id)).digest('hex');
+            sns.md5 = md5;
+            sns.firstPageMd5 = results.firstPageMd5;
+            const frientCircleContent = await wechatDB.collection('frientCircleSNS').findOne({md5});
+            if (!frientCircleContent) {
+                await wechatDB.collection('frientCircleSNS').insertOne(sns);
+            }
+        }
     }
-    returnData.list = result;
     return returnData || {};
 }
 
+/**
+ * 获取好友的朋友圈
+ * @param {好友微信id} wcId 
+ */
+async function getFriendCircle(wcId, firstPageMd5, maxId) {
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/getFriendCircle`, {wId, wcId, firstPageMd5, maxId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    return result;
+}
+
+/**
+ * 发送消息到冲冲冲
+ * @param {好友微信id} wcId 
+ */
+async function postRoujiFriendCircleToRoom() {
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const time = (new Date()).getTime() - 30 * 60 * 1000;
+    const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time/1000}}).toArray();
+    for( let content of contents) {
+        const result = await axios.post(`${host}/sendText`, {wId, wcId,content}, {headers: {Authorization}}).then(response => {return handler(response)});
+    }
+}
 module.exports = {
     postMemberLogin,
     postiPadLogin,
@@ -186,5 +211,7 @@ module.exports = {
     getAddressList,
     getContactLabelList,
     getLabelContacts,
-    getFriendCircle
+    getRoujiFriendCircle,
+    getFriendCircle,
+    postRoujiFriendCircleToRoom
 }
