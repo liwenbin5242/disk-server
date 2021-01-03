@@ -188,15 +188,37 @@ async function getFriendCircle(wcId, firstPageMd5, maxId) {
 
 /**
  * 发送消息到冲冲冲
- * @param {好友微信id} wcId 
+ * @param {群id} chatRoomId 
  */
-async function postRoujiFriendCircleToRoom() {
+async function postRoujiFriendCircleToRoom(chatRoomId) {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const time = (new Date()).getTime() - 30 * 60 * 1000;
+    // const time = (new Date()).getTime() - 30 * 60 * 1000;
+    const time = (new Date()).getTime() - 60 * 60 * 1000 * 300;
     const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time/1000}}).toArray();
     for( let content of contents) {
-        const result = await axios.post(`${host}/sendText`, {wId, wcId,content}, {headers: {Authorization}}).then(response => {return handler(response)});
+        const jsonData = await new Promise((resolve, reject)=> {
+            parser.parseString(content.objectDesc.xml,function(err,result){
+                return resolve(result.TimelineObject) ;             
+            });
+        })
+        content = jsonData.contentDesc[0];
+        const result = await new Promise((resolve, reject) => {
+            setTimeout(async()=> {
+                const result = await axios.post(`${host}/sendText`, {wId, wcId:chatRoomId, content}, {headers: {Authorization}}).then(response => {return handler(response)});
+                resolve(result)
+            }, 6000)
+        })
+        result
     }
+    return {};
+}
+async function postCreateChatroom(){
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const userList = 'liwenbin5242,wxid_g2kxlsivy8x412';
+    const result = await axios.post(`${host}/createChatroom`, {wId, userList, topic: '冲冲冲'}, {headers: {Authorization}}).then(response => {return handler(response)});
+    returnData = result;
+    return returnData || {};
 }
 module.exports = {
     postMemberLogin,
@@ -213,5 +235,6 @@ module.exports = {
     getLabelContacts,
     getRoujiFriendCircle,
     getFriendCircle,
-    postRoujiFriendCircleToRoom
+    postRoujiFriendCircleToRoom,
+    postCreateChatroom
 }

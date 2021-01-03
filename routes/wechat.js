@@ -111,4 +111,12 @@ router.post('/RoujiFriendCircleToRoom',async function(req, res, next) {
     const result = wechatServ.postRoujiFriendCircleToRoom();
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
+
+/**
+ * 建群
+ */
+router.post('/createChatroom',async function(req, res, next) {
+    const result = wechatServ.postCreateChatroom();
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
 module.exports = router;
