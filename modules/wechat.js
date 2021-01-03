@@ -192,7 +192,7 @@ async function getFriendCircle(wcId, firstPageMd5, maxId) {
  */
 async function postRoujiFriendCircleToRoom(chatRoomId) {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const time = (new Date()).getTime() - 30 * 60 * 1000;
+    const time = (new Date()).getTime() - 5 * 60 * 1000;
     const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time/1000}}).toArray();
     for( let content of contents) {
         const jsonData = await new Promise((resolve, reject)=> {
