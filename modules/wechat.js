@@ -1,16 +1,18 @@
 const config = require('config');
+const fs = require('fs');
 const axios = require('axios');
 const host = config.get('host');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
-const {logger} = require('../utils/logger');
 
+const {logger} = require('../utils/logger');
 const {handler} = require('../utils/handler');
 
 const crypto = require('crypto');
 const mongodber = require('../utils/mongodber');
 const wechatDB = mongodber.use('wechat');
-
+const moment = require('moment');
+moment.locale('zh-cn');
 /**
  * 登录开放平台（第一步）
  * @param {账号} account 可选
@@ -148,7 +150,7 @@ async function getRoujiFriendCircle() {
         logger.info('wechat is not online');
         return {};
     }
-    let returnData = {};
+    let returnData = {count: 0};
     const {list} = await getLabelContacts('1');
     for (let i of list) {
         const results = await getFriendCircle(i.userName);
@@ -159,10 +161,11 @@ async function getRoujiFriendCircle() {
             const frientCircleContent = await wechatDB.collection('frientCircleSNS').findOne({md5});
             if (!frientCircleContent) {
                 await wechatDB.collection('frientCircleSNS').insertOne(sns);
+                returnData.count += 1;
             }
         }
     }
-    return returnData || {};
+    return returnData;
 }
 
 /**
@@ -179,31 +182,41 @@ async function getFriendCircle(wcId, firstPageMd5, maxId) {
  * 发送消息到冲冲冲
  * @param {群id} chatRoomId 
  */
-async function postRoujiFriendCircleToRoom(chatRoomId) {
+async function postRoujiFriendCircleToRoom() {
+    const chatRoomId = '20474388408@chatroom';
+    const returnData = {count: 0};
     // 掉线
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')}); 
     if (!(await getIsOnline(wId, Authorization))) {
         logger.info('wechat is not online');
         return {};
     }
-    const time = (new Date()).getTime() - 5 * 60 * 1000;
+    const time = (new Date()).getTime() -  60 * 1000;
     const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time / 1000}}).toArray();
+    let fileContent = '';
+    let fileName = moment().format('LLL') + '.txt';
     for ( let content of contents) {
-        const jsonData = await new Promise((resolve)=> {
-            parser.parseString(content.objectDesc.xml, function(err, result){
+        const jsonData = await new Promise((resolve) => {
+            parser.parseString(content.objectDesc.xml, (err, result) => {
                 return resolve(result.TimelineObject) ;             
             });
         });
         content = jsonData.contentDesc[0];
+        fileContent += content;
         const result = await new Promise((resolve) => {
             setTimeout(async()=> {
                 const result = await axios.post(`${host}/sendText`, {wId, wcId: chatRoomId, content}, {headers: {Authorization}}).then(response => {return handler(response);});
                 resolve(result);
-            },  Math.random() * 50000);
+                returnData.count += 1;
+            },  Math.random() * 5000);
         });
         result;
     }
-    return {};
+    if (fileContent.length > 0) {
+        await fs.writeFileSync(`public/messages/${fileName}`, fileContent);
+        await axios.post(`${host}/sendFile`, {wId, wcId: chatRoomId, path: config.get('app.url') + `/messages/${fileName}`, fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
+    }
+    return returnData;
 }
 async function postCreateChatroom(){
     let returnData = {};
