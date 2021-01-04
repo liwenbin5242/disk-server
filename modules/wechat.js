@@ -160,6 +160,7 @@ async function getRoujiFriendCircle() {
             sns.firstPageMd5 = results.firstPageMd5;
             const frientCircleContent = await wechatDB.collection('frientCircleSNS').findOne({md5});
             if (!frientCircleContent) {
+                sns.send = false;
                 await wechatDB.collection('frientCircleSNS').insertOne(sns);
                 returnData.count += 1;
             }
@@ -191,8 +192,8 @@ async function postRoujiFriendCircleToRoom() {
         logger.info('wechat is not online');
         return {};
     }
-    const time = (new Date()).getTime() -  60 * 1000;
-    const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time / 1000}}).toArray();
+    const time = new Date(new Date().toLocaleDateString()).getTime();
+    const contents = await wechatDB.collection('frientCircleSNS').find({send: false, createTime: {$gte: time / 1000}}).toArray();
     let fileContent = '';
     let fileName = moment().format('LLL') + '.txt';
     for ( let content of contents) {
@@ -201,6 +202,7 @@ async function postRoujiFriendCircleToRoom() {
                 return resolve(result.TimelineObject) ;             
             });
         });
+        await wechatDB.collection('frientCircleSNS').updateOne({md5: content.md5}, {$set: {send: true}});
         content = jsonData.contentDesc[0];
         fileContent += content;
         const result = await new Promise((resolve) => {
