@@ -2,60 +2,56 @@
 
 const http = require('http');
 const mongodber = require('../utils/mongodber');
-const config = require('config')
+const config = require('config');
 // 数据库初始化
 async function initDb() {
-  let databases = config.get('MONGODBS');
-  await mongodber.init(databases);
+    let databases = config.get('MONGODBS');
+    await mongodber.init(databases);
 }
 
-
 (async function init() {
-  // 初始化数据库连接
-  await initDb();
-  const app = require('../app');
-  const port = config.get('PORT');
-  app.set('port', port);
-  const server = http.createServer(app);
-  server.listen(port);
-  server.on('error', onError);
-  const addr = server.address();
+    // 初始化数据库连接
+    await initDb();
+    const app = require('../app');
+    const port = config.get('PORT');
+    app.set('port', port);
+    const server = http.createServer(app);
+    server.listen(port);
+    server.on('error', onError);
 
-  console.info('Listening on ' + port);
+    console.info('Listening on ' + port);
 })();
-
 
 /**
  * Event listener for HTTP server "error" event.
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  const bind = config.get('PORT');
+    const bind = config.get('PORT');
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
     default:
-      throw error;
-  }
+        throw error;
+    }
 }
 
 /**
  * Event listener for HTTP server "listening" event.
  */
 
-
 process.on('uncaughtException', function (err) {
-  console.error('Caught exception: ' + err.stack);
+    console.error('Caught exception: ' + err.stack);
 });

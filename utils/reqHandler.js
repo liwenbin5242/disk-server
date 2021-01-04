@@ -8,7 +8,7 @@ exports.reqHandler = function reqHandler(handler) {
     return async (req, resp, next) => {
         try {
             await handler(req, resp, next);
-        } catch(e) {
+        } catch (e) {
             next(e);
         }
     };
