@@ -3,6 +3,7 @@
 const http = require('http');
 const mongodber = require('../utils/mongodber');
 const config = require('config');
+const {logger} = require('../utils/logger');
 // 数据库初始化
 async function initDb() {
     let databases = config.get('MONGODBS');
@@ -19,7 +20,7 @@ async function initDb() {
     server.listen(port);
     server.on('error', onError);
 
-    console.info('Listening on ' + port);
+    logger.info('Listening on ' + port);
 })();
 
 /**
@@ -36,11 +37,11 @@ function onError(error) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
     case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
+        logger.error(bind + ' requires elevated privileges');
         process.exit(1);
         break;
     case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+        logger.error(bind + ' is already in use');
         process.exit(1);
         break;
     default:
@@ -53,5 +54,5 @@ function onError(error) {
  */
 
 process.on('uncaughtException', function (err) {
-    console.error('Caught exception: ' + err.stack);
+    logger.error('Caught exception: ' + err.stack);
 });

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 let { MongoClient } = require('mongodb');
-
+const {logger} = require('../utils/logger');
 /*
  * Mongodber class
  */
@@ -11,7 +11,7 @@ function Mongodber() {
 Mongodber.prototype.init = async function (dbs_conf) {
     this.dbs_conf = dbs_conf;
     let promises = Object.keys(dbs_conf).map(name => (async () => {
-        console.log(`init ${name}`);
+        logger.log(`init ${name}`);
         let db_url = dbs_conf[name];
         MongoClient = new MongoClient(db_url, {useUnifiedTopology: true});
         try {

@@ -10,7 +10,7 @@ log4js.configure({
         },
         {
             type: 'dateFile',
-            filename: 'logs/EasyStudyWorld.log',
+            filename: 'logs/wecaht2tieba.log',
             pattern: '_yyyy-MM-dd',
             alwaysIncludePattern: false,
             category: 'dateFileLog'
