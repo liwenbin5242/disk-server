@@ -3,6 +3,7 @@ const axios = require('axios');
 const host = config.get('host');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
+const {logger} = require('../utils/logger');
 
 const {handler} = require('../utils/handler');
 
@@ -19,13 +20,13 @@ async function postMemberLogin(account, password) {
     const returnData = {};
     account = account || config.get('account');
     password = password || config.get('password');
-    const result = await axios.post(`${host}/member/login`, {account, password}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/member/login`, {account, password}).then(response => {return handler(response);});
 
     const userAccount = await wechatDB.collection('user').findOne({account, Authorization: result.Authorization});
     if (!userAccount) {
         await wechatDB.collection('user').insertOne(result);
     }
-    return returnData
+    return returnData;
 }
 
 /**
@@ -34,31 +35,12 @@ async function postMemberLogin(account, password) {
 async function postiPadLogin() {
     const returnData = {};
     const {Authorization, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/iPadLogin`, {wcId: wcId,type: 2}, {headers: {Authorization}}).then(response => {return handler(response)});;
+    const result = await axios.post(`${host}/iPadLogin`, {wcId: wcId, type: 2}, {headers: {Authorization}}).then(response => {return handler(response);});
     const wId = result.wId;
     returnData.wId = wId;
-    returnData.qrCodeUrl = result.qrCodeUrl
-    await wechatDB.collection('user').updateOne({account: config.get('account'), Authorization},{$set:{wId}});
+    returnData.qrCodeUrl = result.qrCodeUrl;
+    await wechatDB.collection('user').updateOne({account: config.get('account'), Authorization}, {$set: {wId}});
     return returnData;
-}
-/**
- * 
- * @param {登录实例id} wId 
- * @param {好友微信id} wcId 
- * @param {首页md5} firstPageMd5 
- * @param {} maxId 
- */
-async function saveFriendCircle(wId, wcId, firstPageMd5, maxId) {
-    const result = await axios.post(host+'/getFriendCircle', {wId, wcId, firstPageMd5, maxId}, 
-        {headers: {Authorization}}).then(handler);
-    for(let sns of result.data.data.sns) {
-        const snsMD5 = hash.update(JSON.stringify(sns.objectDesc)).digest('hex');
-        parser.parseString(sns.objectDesc.xml, result => {
-            result
-        })
-        // sns.objectDesc = jsonData;
-        await wechatDB.collection('friendCircleMSG').insert(sns)
-    }
 }
 
 /**
@@ -67,11 +49,10 @@ async function saveFriendCircle(wId, wcId, firstPageMd5, maxId) {
  * @param {认证信息} Authorization 
  */
 async function getIsOnline(wId, Authorization,) {
-    const result = await axios.post(`${host}/getIsOnline`, {wId} ,{headers: {Authorization}}).then(response => {return handler(response)});
-    returnData = result;
-    return returnData
+    const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
+    const returnData = result.isOnline;
+    return returnData;
 }
-
 
 /**
  * 保存目标群组消息
@@ -83,17 +64,17 @@ async function saveAimcircle() {
 async function queryLoginWx() {
     let returnData = {};
     const {Authorization} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/queryLoginWx`, {} ,{headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/queryLoginWx`, {}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
-    return returnData
+    return returnData;
 }
 
 async function secondLogin() {
     let returnData = {};
     const {Authorization, } = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/queryLoginWx`, {} ,{headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/queryLoginWx`, {}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
-    return returnData
+    return returnData;
 }
 
 /**
@@ -102,10 +83,10 @@ async function secondLogin() {
 async function getIPadLoginInfo() {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
-    await wechatDB.collection('userInfo').updateOne({wId},{$set:result},{upsert: true})
+    const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
+    await wechatDB.collection('userInfo').updateOne({wId}, {$set: result}, {upsert: true});
     returnData = result;
-    return returnData
+    return returnData;
 }
 
 /**
@@ -114,7 +95,7 @@ async function getIPadLoginInfo() {
 async function initAddressList() {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/initAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/initAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
@@ -125,9 +106,9 @@ async function initAddressList() {
 async function getAddressList() {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/getAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/getAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
-    await wechatDB.collection('friends').updateOne({wId}, {$set:result}, {upsert: true});
+    await wechatDB.collection('friends').updateOne({wId}, {$set: result}, {upsert: true});
     return returnData || {};
 }
 
@@ -137,10 +118,10 @@ async function getAddressList() {
 async function getContactLabelList() {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/getContactLabelList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/getContactLabelList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData.labelList = result;
     returnData.wId = wId;
-    await wechatDB.collection('friends').updateOne({wId}, {$set:returnData}, {upsert: true});
+    await wechatDB.collection('friends').updateOne({wId}, {$set: returnData}, {upsert: true});
     return returnData || {};
 }
 
@@ -152,7 +133,7 @@ async function getLabelContacts(labelId) {
         list: []
     };
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/getLabelContacts`, {wId, labelId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/getLabelContacts`, {wId, labelId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData.list = result;
     return returnData || {};
 }
@@ -161,9 +142,15 @@ async function getLabelContacts(labelId) {
  * 保存肉鸡的朋友圈
  */
 async function getRoujiFriendCircle() {
+    // 掉线
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')}); 
+    if (!(await getIsOnline(wId, Authorization))) {
+        logger.info('wechat is not online');
+        return {};
+    }
     let returnData = {};
     const {list} = await getLabelContacts('1');
-    for(let i of list) {
+    for (let i of list) {
         const results = await getFriendCircle(i.userName);
         for (let sns of results.sns) {
             const md5 = crypto.createHash('md5').update(JSON.stringify(sns.id)).digest('hex');
@@ -184,7 +171,7 @@ async function getRoujiFriendCircle() {
  */
 async function getFriendCircle(wcId, firstPageMd5, maxId) {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/getFriendCircle`, {wId, wcId, firstPageMd5, maxId}, {headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/getFriendCircle`, {wId, wcId, firstPageMd5, maxId}, {headers: {Authorization}}).then(response => {return handler(response);});
     return result;
 }
 
@@ -193,23 +180,28 @@ async function getFriendCircle(wcId, firstPageMd5, maxId) {
  * @param {群id} chatRoomId 
  */
 async function postRoujiFriendCircleToRoom(chatRoomId) {
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    // 掉线
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')}); 
+    if (!(await getIsOnline(wId, Authorization))) {
+        logger.info('wechat is not online');
+        return {};
+    }
     const time = (new Date()).getTime() - 5 * 60 * 1000;
-    const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time/1000}}).toArray();
-    for( let content of contents) {
-        const jsonData = await new Promise((resolve, reject)=> {
-            parser.parseString(content.objectDesc.xml,function(err,result){
+    const contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time / 1000}}).toArray();
+    for ( let content of contents) {
+        const jsonData = await new Promise((resolve)=> {
+            parser.parseString(content.objectDesc.xml, function(err, result){
                 return resolve(result.TimelineObject) ;             
             });
-        })
+        });
         content = jsonData.contentDesc[0];
-        const result = await new Promise((resolve, reject) => {
+        const result = await new Promise((resolve) => {
             setTimeout(async()=> {
-                const result = await axios.post(`${host}/sendText`, {wId, wcId:chatRoomId, content}, {headers: {Authorization}}).then(response => {return handler(response)});
-                resolve(result)
-            },  Math.random()* 50000)
-        })
-        result
+                const result = await axios.post(`${host}/sendText`, {wId, wcId: chatRoomId, content}, {headers: {Authorization}}).then(response => {return handler(response);});
+                resolve(result);
+            },  Math.random() * 50000);
+        });
+        result;
     }
     return {};
 }
@@ -217,14 +209,13 @@ async function postCreateChatroom(){
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const userList = 'liwenbin5242,wxid_g2kxlsivy8x412';
-    const result = await axios.post(`${host}/createChatroom`, {wId, userList, topic: '冲冲冲'}, {headers: {Authorization}}).then(response => {return handler(response)});
+    const result = await axios.post(`${host}/createChatroom`, {wId, userList, topic: '冲冲冲'}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
 module.exports = {
     postMemberLogin,
     postiPadLogin,
-    saveFriendCircle,
     getIsOnline,
     saveAimcircle,
     queryLoginWx,
@@ -238,4 +229,4 @@ module.exports = {
     getFriendCircle,
     postRoujiFriendCircleToRoom,
     postCreateChatroom
-}
+};
