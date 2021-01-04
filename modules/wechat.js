@@ -1,14 +1,16 @@
 const config = require('config');
 const fs = require('fs');
 const axios = require('axios');
+const crypto = require('crypto');
+
 const host = config.get('host');
 const xml2js = require('xml2js');
+const urlencode = require('urlencode'); 
 const parser = new xml2js.Parser();
 
 const {logger} = require('../utils/logger');
 const {handler} = require('../utils/handler');
 
-const crypto = require('crypto');
 const mongodber = require('../utils/mongodber');
 const wechatDB = mongodber.use('wechat');
 const moment = require('moment');
@@ -216,7 +218,7 @@ async function postRoujiFriendCircleToRoom() {
     }
     if (fileContent.length > 0) {
         await fs.writeFileSync(`public/messages/${fileName}`, fileContent);
-        await axios.post(`${host}/sendFile`, {wId, wcId: chatRoomId, path: config.get('app.url') + `/messages/${fileName}`, fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
+        await axios.post(`${host}/sendFile`, {wId, wcId: chatRoomId, path: config.get('app.url') + `/messages/${urlencode(fileName)}`, fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
     }
     return returnData;
 }
