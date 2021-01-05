@@ -5,7 +5,7 @@ const logger = require('morgan');
 const {wechatSchedule} = require('./lib/wechatSchedule');
 
 const wechatRouter = require('./routes/wechat');
-const tiebaRouter = require('./routes/tieba');
+const bar = require('./routes/bar');
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 app.use('/', wechatRouter);
-app.use('/tieba', tiebaRouter);
+app.use('/bar', bar);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
