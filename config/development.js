@@ -12,6 +12,12 @@ module.exports = {
     MONGODBS: {
         wechat: 'mongodb://15810185602:lilaoshuan123@81.70.203.247:27017/wechat'
     },
+    REDIS: {
+        'port': 6379,
+        'host': '81.70.203.247',
+        'db': 4,
+        'password': ''
+    },
     GROUP_NAME: 'knowledgeGroup',
     ROOM_NAME: '冲冲冲'
 };

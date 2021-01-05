@@ -2,17 +2,33 @@
 
 const http = require('http');
 const mongodber = require('../utils/mongodber');
+const rediser = require('../utils/rediser');
 const config = require('config');
 const {logger} = require('../utils/logger');
+const redisConfig = config.get('REDIS');
+
 // 数据库初始化
 async function initDb() {
     let databases = config.get('MONGODBS');
     await mongodber.init(databases);
 }
-
+// 数据库初始化
+async function initRedis() {
+    const redisConfig = config.get('REDIS');
+    // Inject redis client
+    await rediser.init(redisConfig, function (err) {
+        if (err) {
+            logger.error('Connect Redis Error: ' + err);
+        } else {
+            logger.info('Redis is ready!');
+        }
+    });
+}
 (async function init() {
     // 初始化数据库连接
     await initDb();
+    // 初始化redis数据库连接
+    await initRedis();
     const app = require('../app');
     const port = config.get('PORT');
     app.set('port', port);

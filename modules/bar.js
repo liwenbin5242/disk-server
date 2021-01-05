@@ -1,14 +1,15 @@
 const mongodber = require('../utils/mongodber');
 const wechatDB = mongodber.use('wechat');
 const _ = require('lodash');
-
+const { redis } = require('../utils/rediser');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
 /**
  * 外部接口调用,发帖内容
  */
 async function getText() {
-     
+    const content = await redis.set('content');
+    return content;
 }
 
 /**
@@ -26,6 +27,9 @@ async function getTitle() {
             return resolve(result.TimelineObject) ;             
         });
     });
+    const title = getTitle(jsonData);
+    await redis.set('content', jsonData);
+    return title;
 }
 
 /**

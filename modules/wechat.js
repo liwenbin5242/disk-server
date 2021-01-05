@@ -217,8 +217,8 @@ async function postRoujiFriendCircleToRoom() {
         result;
     }
     if (fileContent.length > 0) {
-        await fs.writeFileSync(`public/messages/${fileName}`, fileContent);
-        await axios.post(`${host}/sendFile`, {wId, wcId: chatRoomId, path: config.get('app.url') + `/messages/${urlencode(fileName)}`, fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
+        // await fs.writeFileSync(`public/messages/${fileName}`, fileContent);
+        // await axios.post(`${host}/sendFile`, {wId, wcId: chatRoomId, path: config.get('app.url') + `/messages/${urlencode(fileName)}`, fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
     }
     return returnData;
 }
