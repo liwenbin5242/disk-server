@@ -27,7 +27,7 @@ async function getTitle() {
             return resolve(result.TimelineObject) ;             
         });
     });
-    const title = getTitle(jsonData);
+    const title = jsonData.contentDesc[0];
     await redis.set('content', jsonData);
     return title;
 }
