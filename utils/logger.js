@@ -22,6 +22,6 @@ log4js.configure({
     }
 });
 
-const dateFileLog = log4js.getLogger(_.isEqual(config.get('app.env'), 'dev') ? 'console' : 'dateFileLog');
+const dateFileLog = log4js.getLogger(_.isEqual(config.get('app.env'), 'dev') ? 'dateFileLog' : 'dateFileLog');
 
 exports.logger = dateFileLog;
