@@ -16,7 +16,7 @@ exports.reqHandler = function reqHandler(handler) {
                 errStack: err.stack || err,
             });
             logger.error(err)
-            return res.json(resJson(500, err.message || err || '内部错误', {}, errMsg));
+            return res.end('好像出错了呢，快看下吧');
         }
     };
 };
