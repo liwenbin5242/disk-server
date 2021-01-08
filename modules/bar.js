@@ -21,6 +21,8 @@ async function getText() {
  * 外部接口调用,发帖标题
  */
 async function getTitle() {
+    const a = _.shuffle( ['哇塞我好想要','我想要','哇塞我']).pop();
+    const b = _.shuffle( ['就对了','可以','行了']).pop();
     const time = new Date(new Date().toLocaleDateString()).getTime();
     let contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time / 1000}}).toArray();
     if (contents.length === 0) {
