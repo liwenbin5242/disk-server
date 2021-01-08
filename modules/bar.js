@@ -35,7 +35,7 @@ async function getTitle() {
     const barcontent = getContextContent(jsonData.contentDesc[0]);
     
     const title =  getContextTitle(barcontent);
-    await redis.set('content', barcontent);
+    await redis.set('content', barcontent+`${a}想要课程珈😘egg4402${b}`);
     return title;
 }
 
@@ -46,7 +46,7 @@ async function getSofa() {
     const a = _.shuffle( ['哇塞我好想要','我想要','哇塞我']).pop();
     const b = _.shuffle( ['就对了','可以','行了']).pop();
     
-    return `${a}想要课程++😘egg4402${b}`
+    return `${a}想要课程珈😘egg4402${b}`
 }
 
 function getContextTitle(context) {
