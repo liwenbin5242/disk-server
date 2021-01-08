@@ -15,8 +15,8 @@ module.exports = {
     REDIS: {
         'port': 8001,
         'host': '81.70.203.247',
-        'db': 4,
-        'password': ''
+        'db': 1,
+        'password': 'lilaoshuan123'
     },
     GROUP_NAME: 'knowledgeGroup',
     ROOM_NAME: '冲冲冲'
