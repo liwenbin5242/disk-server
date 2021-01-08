@@ -42,7 +42,8 @@ async function getTitle() {
  * 外部接口调用,抢楼
  */
 async function getSofa() {
-     
+    const a = ['哇塞我好想要','我想要','哇塞我'].shuffle().shuffle()
+    return `${a}想要课程++😘egg4402就对了`
 }
 
 function getContextTitle(context) {
@@ -70,9 +71,11 @@ function getContextContent(context) {
     let arr = ['会员', '免费', '元'];
     for (let a of arr) {
         context = context.replace(new RegExp(a, 'gm'), '');
+        context = context.replace(new RegExp('/n', 'gm'), ' ');
     }
     return context;
 }
+
 module.exports = {
     getText,
     getTitle,
