@@ -10,7 +10,8 @@ const parser = new xml2js.Parser();
 async function getText() {
     const content = await new Promise((resolve)=> {
         redis.get('content', (err, result) => {
-            resolve(result);
+            resolve(result.replace(new RegExp('/n', 'gm'), '😊'));
+            // resolve(result);
         });
     }); 
     return content;
@@ -42,8 +43,10 @@ async function getTitle() {
  * 外部接口调用,抢楼
  */
 async function getSofa() {
-    const a = ['哇塞我好想要','我想要','哇塞我'].shuffle().shuffle()
-    return `${a}想要课程++😘egg4402就对了`
+    const a = _.shuffle( ['哇塞我好想要','我想要','哇塞我']).pop();
+    const b = _.shuffle( ['就对了','可以','行了']).pop();
+    
+    return `${a}想要课程++😘egg4402${b}`
 }
 
 function getContextTitle(context) {
@@ -63,7 +66,7 @@ function getContextTitle(context) {
             return i.split(sign4)[0];
         }
     }
-    return context.split(0, 20);
+    return context.slice(0, 20);
 }
 
 function getContextContent(context) {

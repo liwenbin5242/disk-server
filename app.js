@@ -1,9 +1,9 @@
 const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const { logger } = require('./utils/logger');
 const {wechatSchedule} = require('./lib/wechatSchedule');
-
+const moment = require('moment');
 const wechatRouter = require('./routes/wechat');
 const bar = require('./routes/bar');
 
@@ -11,14 +11,20 @@ const app = express();
 
 // view engine setup
 
-app.use(logger('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
+
+app.all('*', (req, res, next)=> {
+    logger.info( req.method+req.url+req.path);
+    next()
+});
 app.use(express.static('public'));
 app.use('/', wechatRouter);
 app.use('/bar', bar);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
