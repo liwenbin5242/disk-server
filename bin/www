@@ -10,17 +10,21 @@ const {logger} = require('../utils/logger');
 async function initDb() {
     let databases = config.get('MONGODBS');
     await mongodber.init(databases);
+    logger.info('mongo is ready!');
 }
 // 数据库初始化
 async function initRedis() {
     const redisConfig = config.get('REDIS');
     // Inject redis client
-    await rediser.init(redisConfig, function (err) {
-        if (err) {
-            logger.error('Connect Redis Error: ' + err);
-        } else {
-            logger.info('Redis is ready!');
-        }
+    await new Promise((resolve) => {
+        rediser.init(redisConfig, function (err) {
+            if (err) {
+                logger.error('Connect Redis Error: ' + err);
+            } else {
+                logger.info('Redis is ready!');
+                return resolve();
+            }
+        });
     });
 }
 (async function init() {
