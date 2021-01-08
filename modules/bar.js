@@ -32,6 +32,7 @@ async function getTitle() {
         });
     });
     const barcontent = getContextContent(jsonData.contentDesc[0]);
+    
     const title =  getContextTitle(barcontent);
     await redis.set('content', barcontent);
     return title;
@@ -61,10 +62,11 @@ function getContextTitle(context) {
             return i.split(sign4)[0];
         }
     }
-    return context.splice(0, 20);
+    return context.split(0, 20);
 }
 
 function getContextContent(context) {
+    console.log(context);
     let arr = ['会员', '免费', '元'];
     for (let a of arr) {
         context = context.replace(new RegExp(a, 'gm'), '');
