@@ -5,7 +5,7 @@
  * @returns {function} callback
  */
 
-const {logger} = require('./logger')
+const {logger} = require('./logger');
 exports.reqHandler = function reqHandler(handler) {
     return async (req, resp, next) => {
         try {
@@ -15,8 +15,9 @@ exports.reqHandler = function reqHandler(handler) {
                 logLevel: 'error',
                 errStack: err.stack || err,
             });
-            logger.error(err)
-            return res.end('好像出错了呢，快看下吧');
+            err.message = errMsg;
+            logger.error(err);
+            return resp.end('好像出错了呢，快看下吧');
         }
     };
 };

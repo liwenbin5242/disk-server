@@ -1,11 +1,11 @@
 const config = require('config');
-const fs = require('fs');
+
 const axios = require('axios');
 const crypto = require('crypto');
 
 const host = config.get('host');
 const xml2js = require('xml2js');
-const urlencode = require('urlencode'); 
+
 const parser = new xml2js.Parser();
 
 const {logger} = require('../utils/logger');
@@ -90,6 +90,7 @@ async function getIPadLoginInfo() {
     const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     await wechatDB.collection('userInfo').updateOne({wId}, {$set: result}, {upsert: true});
     returnData = result;
+    await initAddressList();
     return returnData;
 }
 
@@ -101,6 +102,12 @@ async function initAddressList() {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/initAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
+    await new Promise((resolve)=> {
+        setTimeout(()=> {
+            getAddressList();
+            resolve();
+        }, 4000);
+    });
     return returnData || {};
 }
 
