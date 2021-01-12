@@ -196,8 +196,6 @@ async function postRoujiFriendCircleToRoom() {
     }
     const time = new Date(new Date().toLocaleDateString()).getTime();
     const contents = await wechatDB.collection('frientCircleSNS').find({send: false, createTime: {$gte: time / 1000}}).toArray();
-    let fileContent = '';
-    let fileName = moment().format('LLL') + '.txt';
     for ( let content of contents) {
         const jsonData = await new Promise((resolve) => {
             parser.parseString(content.objectDesc.xml, (err, result) => {
@@ -206,19 +204,13 @@ async function postRoujiFriendCircleToRoom() {
         });
         await wechatDB.collection('frientCircleSNS').updateOne({md5: content.md5}, {$set: {send: true}});
         content = jsonData.contentDesc[0];
-        fileContent += content;
-        const result = await new Promise((resolve) => {
+        await new Promise((resolve) => {
             setTimeout(async()=> {
                 const result = await axios.post(`${host}/sendText`, {wId, wcId: chatRoomId, content}, {headers: {Authorization}}).then(response => {return handler(response);});
                 resolve(result);
                 returnData.count += 1;
             },  Math.random() * 5000);
         });
-        result;
-    }
-    if (fileContent.length > 0) {
-        // await fs.writeFileSync(`public/messages/${fileName}`, fileContent);
-        // await axios.post(`${host}/sendFile`, {wId, wcId: chatRoomId, path: config.get('app.url') + `/messages/${urlencode(fileName)}`, fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
     }
     return returnData;
 }

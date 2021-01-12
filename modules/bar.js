@@ -21,8 +21,8 @@ async function getText() {
  * 外部接口调用,发帖标题
  */
 async function getTitle() {
-    const a = _.shuffle( ['哇塞我好想要','我想要','哇塞我']).pop();
-    const b = _.shuffle( ['就对了','可以','行了']).pop();
+    const a = _.shuffle( ['哇塞我好想要', '我想要', '哇塞我']).pop();
+    const b = _.shuffle( ['就对了', '可以', '行了']).pop();
     const time = new Date(new Date().toLocaleDateString()).getTime();
     let contents = await wechatDB.collection('frientCircleSNS').find({createTime: {$gte: time / 1000}}).toArray();
     if (contents.length === 0) {
@@ -37,7 +37,7 @@ async function getTitle() {
     const barcontent = getContextContent(jsonData.contentDesc[0]);
     
     const title =  getContextTitle(barcontent);
-    await redis.set('content', barcontent+`${a}想要课程珈😘egg4402${b}`);
+    await redis.set('content', barcontent + `${a}课程分享😘${b},@egg4402`);
     return title;
 }
 
@@ -45,10 +45,10 @@ async function getTitle() {
  * 外部接口调用,抢楼
  */
 async function getSofa() {
-    const a = _.shuffle( ['哇塞我好想要','我想要','哇塞我']).pop();
-    const b = _.shuffle( ['就对了','可以','行了']).pop();
+    const a = _.shuffle( ['哇塞我好想要', '我想要', '哇塞我']).pop();
+    const b = _.shuffle( ['就对了', '可以', '行了']).pop();
     
-    return `${a}想要课程珈😘egg4402${b}`
+    return `${a}要课程分享😘${b},@egg4402`;
 }
 
 function getContextTitle(context) {
