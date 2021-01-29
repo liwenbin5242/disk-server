@@ -229,6 +229,17 @@ async function postCreateChatroom(){
     returnData = result;
     return returnData || {};
 }
+
+/**
+ * 发送文本消息
+ */
+async function postsendText(data) {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/sendText`, {wId, wcId: data.wcId, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
+    returnData = result;
+    return returnData || {};
+}
 module.exports = {
     postMemberLogin,
     postiPadLogin,
@@ -244,5 +255,6 @@ module.exports = {
     getRoujiFriendCircle,
     getFriendCircle,
     postRoujiFriendCircleToRoom,
-    postCreateChatroom
+    postCreateChatroom,
+    postsendText
 };
