@@ -82,14 +82,15 @@ router.post('/getRoujiFriendCircle', async function(req, res) {
  * 查询微信是否在线
  */
 router.post('/isOnline', async function(req, res) {
-    return res.json(wechatServ.getIsOnline(req.body.wId, req.header.authorization));
+    const result = await wechatServ.getIsOnline(req.body.wId, req.header.authorization);
+    return res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
 /**
  * 查询微信是否在线
  */
 router.post('/queryLoginWx', async function(req, res) {
-    const result = wechatServ.queryLoginWx();
+    const result = await wechatServ.queryLoginWx();
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
@@ -112,9 +113,24 @@ router.post('/createChatroom', async function(req, res) {
 /**
  * 发送消息
  */
-
 router.post('/sendText', async function(req, res) {
-    const result = wechatServ.postsendText(req.body);
+    const result = wechatServ.postSendText(req.body);
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
+
+/**
+ * 发送消息
+ */
+router.post('/sendImage', async function(req, res) {
+    const result = wechatServ.postSendImage(req.body);
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
+
+/**
+ * 发送消息
+ */
+router.post('/sendFile', async function(req, res) {
+    const result = wechatServ.postSendFile(req.body);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 

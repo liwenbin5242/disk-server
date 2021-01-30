@@ -52,7 +52,8 @@ async function postiPadLogin() {
  * @param {登录实例id} wId 
  * @param {认证信息} Authorization 
  */
-async function getIsOnline(wId, Authorization,) {
+async function getIsOnline() {
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
     return returnData;
@@ -70,13 +71,16 @@ async function queryLoginWx() {
     const {Authorization} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/queryLoginWx`, {}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
+    for (let i of result) {
+        await wechatDB.collection('user').updateOne({wId: i.wId}, {$set: {wcId: i.wcId}});
+    }
     return returnData;
 }
 
 async function secondLogin() {
     let returnData = {};
-    const {Authorization, } = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/queryLoginWx`, {}, {headers: {Authorization}}).then(response => {return handler(response);});
+    const {Authorization, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/secondLogin`, {wcId, type: 2}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData;
 }
@@ -233,13 +237,36 @@ async function postCreateChatroom(){
 /**
  * 发送文本消息
  */
-async function postsendText(data) {
+async function postSendText(data) {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/sendText`, {wId, wcId: data.wcId, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
+
+/**
+ * 发送图片消息
+ */
+async function postSendImage(data) {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/sendImage`, {wId, wcId: data.wcId, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
+    returnData = result;
+    return returnData || {};
+}
+
+/**
+ * 发送文件消息
+ */
+async function postSendFile(data) {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/sendFile`, {wId, wcId: data.wcId, path: data.path, fileName: data.fileName}, {headers: {Authorization}}).then(response => {return handler(response);});
+    returnData = result;
+    return returnData || {};
+}
+
 module.exports = {
     postMemberLogin,
     postiPadLogin,
@@ -256,5 +283,7 @@ module.exports = {
     getFriendCircle,
     postRoujiFriendCircleToRoom,
     postCreateChatroom,
-    postsendText
+    postSendText,
+    postSendImage,
+    postSendFile
 };
