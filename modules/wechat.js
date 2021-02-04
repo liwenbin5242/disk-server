@@ -240,7 +240,7 @@ async function postCreateChatroom(){
 async function postSendText(data) {
     let returnData = {};
     const {Authorization, wId, master} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/sendText`, {wId, wcId: master, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
+    const result = await axios.post(`${host}/sendText`, {wId, wcId: '20474388408@chatroom', content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
