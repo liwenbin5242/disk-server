@@ -16,7 +16,7 @@ async function dealFriendRequest(reqData) {
     // 解析xml数据
     const jsonData = await new Promise((resolve) => {
         parser.parseString(content, (err, result) => {
-            return resolve(result.TimelineObject);             
+            return resolve(result);             
         });
     });
     logger.info(JSON.stringify(jsonData));
