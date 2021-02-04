@@ -142,4 +142,12 @@ router.post('/delContact', async function(req, res) {
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
+/**
+ * 同意添加好友
+ */
+router.post('/acceptUser', async function(req, res) {
+    const result = wechatServ.postacceptUser(req.body);
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
+
 module.exports = router;

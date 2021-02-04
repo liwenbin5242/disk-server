@@ -5,7 +5,6 @@ const crypto = require('crypto');
 
 const host = config.get('host');
 const xml2js = require('xml2js');
-
 const parser = new xml2js.Parser();
 
 const {logger} = require('../utils/logger');
@@ -239,8 +238,8 @@ async function postCreateChatroom(){
  */
 async function postSendText(data) {
     let returnData = {};
-    const {Authorization, wId, master} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/sendText`, {wId, wcId: '20474388408@chatroom', content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/sendText`, {wId, wcId: data.wcId, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
@@ -270,10 +269,21 @@ async function postSendFile(data) {
 /**
  * 删除好友
  */
-async function postdelContact(data) {
+async function postDelContact(data) {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/delContact`, {wId, wcId: data.wcId}, {headers: {Authorization}}).then(response => {return handler(response);});
+    returnData = result;
+    return returnData || {};
+}
+
+/**
+ * 添加好友
+ */
+async function postAcceptUser(data) {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/delContact`, {wId, v1: data.v1, v2: data.v2, type: data.type}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
@@ -296,5 +306,6 @@ module.exports = {
     postSendText,
     postSendImage,
     postSendFile,
-    postdelContact
+    postDelContact,
+    postAcceptUser
 };

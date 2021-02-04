@@ -19,5 +19,6 @@ module.exports = {
         'password': 'lilaoshuan123'
     },
     GROUP_NAME: 'knowledgeGroup',
-    ROOM_NAME: '冲冲冲'
+    ROOM_NAME: '冲冲冲',
+    myName: '@A001'
 };
