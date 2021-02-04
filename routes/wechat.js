@@ -134,4 +134,12 @@ router.post('/sendFile', async function(req, res) {
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
+/**
+ * 删除好友
+ */
+router.post('/delContact', async function(req, res) {
+    const result = wechatServ.postdelContact(req.body);
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+});
+
 module.exports = router;

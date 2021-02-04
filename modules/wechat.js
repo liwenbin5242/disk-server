@@ -239,8 +239,8 @@ async function postCreateChatroom(){
  */
 async function postSendText(data) {
     let returnData = {};
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/sendText`, {wId, wcId: data.wcId, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
+    const {Authorization, wId, master} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/sendText`, {wId, wcId: master, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
@@ -267,6 +267,16 @@ async function postSendFile(data) {
     return returnData || {};
 }
 
+/**
+ * 删除好友
+ */
+async function postdelContact(data) {
+    let returnData = {};
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const result = await axios.post(`${host}/delContact`, {wId, wcId: data.wcId}, {headers: {Authorization}}).then(response => {return handler(response);});
+    returnData = result;
+    return returnData || {};
+}
 module.exports = {
     postMemberLogin,
     postiPadLogin,
@@ -285,5 +295,6 @@ module.exports = {
     postCreateChatroom,
     postSendText,
     postSendImage,
-    postSendFile
+    postSendFile,
+    postdelContact
 };

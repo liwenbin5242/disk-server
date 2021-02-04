@@ -9,12 +9,17 @@ const logicServ = require('./logic');
  * deal msg
  * @param {msg data} data 
  */
-function getMsg(data) {
+async function getMsg(data) {
     wechatDB.collection('messages').insertOne(data);
+
     switch (data.messageType) {
     case enums.messageCodes.FriendRequest: 
-        logicServ.dealFriendRequest();
+        await logicServ.dealFriendRequest(data);
+        break;
+    case enums.messageCodes.RoomMsg: 
+        logicServ.dealRoomMsg(data);
     }
+    return;
 }
 
 module.exports = {
