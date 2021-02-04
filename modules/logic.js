@@ -38,6 +38,7 @@ async function roomTextMsg(data) {
     let content = data.data.content;
     let mentioned = content.includes(config.get('myName'));
     let reqData = {}, message = {};
+    logger.info('roomTextMsg ok');
     if (!mentioned) return;
     content = content.replace(config.get('myName'), '');
     let action = content.split(':');
@@ -51,9 +52,11 @@ async function roomTextMsg(data) {
         await wechatServ.postSendText(reqData);
         break;
     case enums.autoReplyKeyWords.Add:
+        logger.info('autoReplyKeyWords ok');
         message = await wechatDB.collection('messages').findOne({
             messageType: enums.messageCodes.FriendRequest, msgId: action[1]
         });
+        logger.info(message, '消息');
         if (!message) break;
         reqData = {
             v1: message.v1,
