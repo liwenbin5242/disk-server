@@ -40,9 +40,10 @@ async function roomTextMsg(data) {
     if (!mentioned) return;
     content = content.replace(config.get('myName'), '');
     let action = content.split(':');
+    logger.info(content, 'content');
+    logger.info(action, 'action');
     if (action.length < 2) return;
     action = action[0];
-    logger.info(content);
     switch (action) {
     case enums.autoReplyKeyWords.Reply:
         content = content.split(' ');
