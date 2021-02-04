@@ -43,8 +43,7 @@ async function roomTextMsg(data) {
     logger.info(content, 'content');
     logger.info(action, 'action');
     if (action.length < 2) return;
-    action = action[0].trim();
-    switch (action) {
+    switch (action[0].trim()) {
     case enums.autoReplyKeyWords.Reply:
         content = content.split(' ');
         reqData.wcId = content[0];
