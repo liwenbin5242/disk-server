@@ -284,7 +284,7 @@ async function postAcceptUser(data) {
     let returnData = {};
     logger.info(data);
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const result = await axios.post(`${host}/delContact`, {wId, v1: data.v1, v2: data.v2, type: data.type}, {headers: {Authorization}}).then(response => {return handler(response);});
+    const result = await axios.post(`${host}/acceptUser`, {wId, v1: data.v1, v2: data.v2, type: data.type}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
     return returnData || {};
 }
