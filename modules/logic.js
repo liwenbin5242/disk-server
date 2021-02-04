@@ -19,10 +19,10 @@ async function dealFriendRequest(reqData) {
             return resolve(result);             
         });
     });
-    logger.info(JSON.stringify(jsonData));
+    logger.info((jsonData));
     // 发送消息给我
     const msgData = {
-        content: `来自${jsonData.fromusername}的好友添加请求，请及时处理!!`
+        content: `来自${jsonData.msg.$.fromusername}的好友添加请求,请求备注${jsonData.remark}，请及时处理!!`
     };
     await wechatServ.postSendText(msgData);
     return jsonData;
