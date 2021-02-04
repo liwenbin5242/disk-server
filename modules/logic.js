@@ -20,7 +20,6 @@ async function dealFriendRequest(reqData) {
             return resolve(result);             
         });
     });
-    logger.info((jsonData));
     // 发送消息到冲冲冲
     const msgData = {
         content: `来自: ${jsonData.msg.$.fromusername} 的好友添加请求,请求备注:${reqData.data.remark}。消息id:${reqData.data.msgId} 请及时处理!!`,
@@ -38,12 +37,12 @@ async function roomTextMsg(data) {
     let content = data.data.content;
     let mentioned = content.includes(config.get('myName'));
     let reqData = {}, message = {};
-    logger.info('roomTextMsg ok');
     if (!mentioned) return;
     content = content.replace(config.get('myName'), '');
     let action = content.split(':');
     if (action.length < 2) return;
     action = action[0];
+    logger.info(content);
     switch (action) {
     case enums.autoReplyKeyWords.Reply:
         content = content.split(' ');
