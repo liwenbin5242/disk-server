@@ -63,6 +63,10 @@ async function roomTextMsg(data) {
             type: message.scene
         };
         await wechatServ.postAcceptUser(reqData);
+        await wechatServ.postSendText({
+            wcId: '20474388408@chatroom',
+            content: '好友添加完成!'
+        });
         break;
     }
     return;
