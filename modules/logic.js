@@ -51,9 +51,9 @@ async function roomTextMsg(data) {
         await wechatServ.postSendText(reqData);
         break;
     case enums.autoReplyKeyWords.Add:
-        logger.info('autoReplyKeyWords ok');
+        logger.info('autoReplyKeyWords ok', action[1]);
         message = await wechatDB.collection('messages').findOne({
-            messageType: enums.messageCodes.FriendRequest, msgId: parseInt(action[1])
+            messageType: enums.messageCodes.FriendRequest, 'data.msgId': parseInt(action[1])
         });
         logger.info(message, '消息');
         if (!message) break;
