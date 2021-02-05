@@ -45,7 +45,7 @@ async function roomTextMsg(data) {
     if (action.length < 2) return;
     switch (action[0].trim()) {
     case enums.autoReplyKeyWords.Reply:
-        content = content.replace(':', '');
+        content = content.replace(enums.autoReplyKeyWords.Reply, '').replace(':', '');
         content = content.split(' ');
         reqData.wcId = content[0];
         reqData.content = content[1];
