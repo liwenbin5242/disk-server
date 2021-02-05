@@ -76,7 +76,12 @@ async function roomTextMsg(data) {
  * @param {*} data 
  */
 async function dealPrivateMsg(data) {
-
+    const msgData = {
+        content: `来自: ${data.data.fromUser} 的消息。--${data.data.content}--请及时回复!!`,
+        wcId: '20474388408@chatroom'
+    }; 
+    await wechatServ.postSendText(msgData);
+    return;
 }
 module.exports = {
     dealFriendRequest,
