@@ -19,6 +19,9 @@ async function getMsg(data) {
     case enums.messageCodes.RoomMsg: 
         logicServ.dealRoomMsg(data);
         break;
+    case enums.messageCodes.PrivateChat: 
+        logicServ.dealPrivateMsg(data);
+        break;
     case enums.messageCodes.RoomTextMsg:
         logicServ.roomTextMsg(data);
         break;
