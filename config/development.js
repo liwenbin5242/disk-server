@@ -20,5 +20,8 @@ module.exports = {
     },
     GROUP_NAME: 'knowledgeGroup',
     ROOM_NAME: '冲冲冲',
-    myName: '@A001'
+    MY_NAME: '@A001',
+    DEDAO_SERV: {
+        url: 'http://81.70.203.247:4567',
+    }
 };

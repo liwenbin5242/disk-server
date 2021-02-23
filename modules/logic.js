@@ -35,10 +35,10 @@ async function dealFriendRequest(reqData) {
  */
 async function roomTextMsg(data) {
     let content = data.data.content;
-    let mentioned = content.includes(config.get('myName'));
+    let mentioned = content.includes(config.get('MY_NAME'));
     let reqData = {}, message = {};
     if (!mentioned) return;
-    content = content.replace(config.get('myName'), '');
+    content = content.replace(config.get('MY_NAME'), '');
     let action = content.split(':');
     logger.info(content, 'content');
     logger.info(action, 'action');
