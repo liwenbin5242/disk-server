@@ -11,6 +11,7 @@ const {logger} = require('../utils/logger');
 const {handler} = require('../utils/handler');
 
 const mongodber = require('../utils/mongodber');
+const redis = require('../utils/rediser');
 const wechatDB = mongodber.use('wechat');
 const moment = require('moment');
 moment.locale('zh-cn');
@@ -29,6 +30,7 @@ async function postMemberLogin(account, password) {
     if (!userAccount) {
         await wechatDB.collection('user').insertOne(result);
     }
+    redis.set({Authorization: result.Authorization});
     return returnData;
 }
 
@@ -55,6 +57,7 @@ async function getIsOnline() {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
+    if (!returnData) logger.warn('off line');
     return returnData;
 }
 

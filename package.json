@@ -21,6 +21,8 @@
     "moment": "2.29.1",
     "urlencode":"^1.1.0",
     "redlock": "^4.2.0",
-    "ioredis": "4.19.4"
+    "ioredis": "4.19.4",
+    "nodemailer": "6.5.0",
+    "cheerio": "1.0.0-rc.6"
   }
 }
