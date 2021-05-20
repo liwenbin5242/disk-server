@@ -11,9 +11,9 @@ function Mongodber() {
 Mongodber.prototype.init = async function (dbs_conf) {
     this.dbs_conf = dbs_conf;
     let promises = Object.keys(dbs_conf).map(name => (async () => {
-        logger.log(`init ${name}`);
+        logger.info(`init ${name} db`);
         let db_url = dbs_conf[name];
-        MongoClient = new MongoClient(db_url, {useUnifiedTopology: true});
+        MongoClient = new MongoClient(db_url.host, {useUnifiedTopology: true, auth: {user: db_url.user, password: db_url.password}});
         try {
             this.dbs[name] = await MongoClient.connect();
         } catch (e) {

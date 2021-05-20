@@ -10,13 +10,17 @@ module.exports = {
     account: '15810185602',
     password: '123456',
     MONGODBS: {
-        wechat: 'mongodb://15810185602:lilaoshuan123@81.70.203.247:7001/wechat'
-    },
+        wechat: {
+            host: 'mongodb://81.70.203.247:7001/wechat',
+            user: '15810185602',
+            password: 'liwenbin($%@>($%#'
+        }
+    },               
     REDIS: {
         'port': 8001,
         'host': '81.70.203.247',
         'db': 1,
-        'password': 'lilaoshuan123'
+        'password': 'liwenbin($%@>($%#'
     },
     GROUP_NAME: 'knowledgeGroup',
     ROOM_NAME: '冲冲冲',

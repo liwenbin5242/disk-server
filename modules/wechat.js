@@ -2,6 +2,7 @@ const config = require('config');
 
 const axios = require('axios');
 const crypto = require('crypto');
+const qrcode = require('qrcode-terminal');
 
 const host = config.get('host');
 const xml2js = require('xml2js');
@@ -30,7 +31,7 @@ async function postMemberLogin(account, password) {
     if (!userAccount) {
         await wechatDB.collection('user').insertOne(result);
     }
-    redis.set({Authorization: result.Authorization});
+    await redis.set('user', {Authorization: result.Authorization});
     return returnData;
 }
 
@@ -54,7 +55,12 @@ async function postiPadLogin() {
  * @param {认证信息} Authorization 
  */
 async function getIsOnline() {
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const account = await redis.get('account');
+    if (!account) {
+        logger.warn('off line');
+        return false;
+    }
+    const {Authorization, wId} = JSON.parse(account);
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
     if (!returnData) logger.warn('off line');
@@ -291,6 +297,27 @@ async function postAcceptUser(data) {
     returnData = result;
     return returnData || {};
 }
+
+/**
+ * 输出终端二维码
+ */
+async function getTerminalQRCode() {
+    const data = await postiPadLogin();
+    const file = await axios.get(data.qrCodeUrl);
+    qrcode.generate(file.data, (code) => {
+        console.log(code);
+    });
+}
+
+/**
+ * 登录平台
+ */
+async function wkLogin() {
+    const user = await redis.get('user');
+    if (!user) {
+        await postMemberLogin();
+    }
+}
 module.exports = {
     postMemberLogin,
     postiPadLogin,
@@ -311,5 +338,7 @@ module.exports = {
     postSendImage,
     postSendFile,
     postDelContact,
-    postAcceptUser
+    postAcceptUser,
+    getTerminalQRCode,
+    wkLogin
 };

@@ -32,45 +32,18 @@ Rediser.prototype.init = function (conf, callback) {
     });
 };
 
-Rediser.prototype.get = function (key, callback) {
-    this.redis.get(key, function (err, value) {
-        if (err) {
-            return callback(err, null);
-        }
-        if (!value) {
-            return callback(null, null);
-        }
-        try {
-            value = JSON.parse(value);
-        } catch (err) {
-            return callback(err, null);
-        }
-        return callback(null, value);
-    });
+Rediser.prototype.get = async function (key) {
+    return await this.redis.get(key);
 };
 
-Rediser.prototype.set = function (key, value, time, callback) {
+Rediser.prototype.set = async function (key, value, time) {
     let self = this;
-
-    if (typeof time === 'function') {
-        callback = time;
-        time = null;
-    }
-    if (!value) {
-        return callback(null, null);
-    }
-
-    callback = callback || function () { };
-    try {
-        value = JSON.stringify(value);
-    } catch (e) {
-        return callback(e, null);
-    }
-
+    value = JSON.stringify(value);
+    
     if (!time) {
-        self.redis.set(key, value, callback);
+        await self.redis.set(key, value);
     } else {
-        self.redis.setex(key, time, value, callback);
+        await self.redis.setex(key, time, value);
     }
 };
 
