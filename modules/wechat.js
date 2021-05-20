@@ -2,7 +2,6 @@ const config = require('config');
 
 const axios = require('axios');
 const crypto = require('crypto');
-const qrcode = require('qrcode-terminal');
 
 const host = config.get('host');
 const xml2js = require('xml2js');
@@ -89,6 +88,7 @@ async function secondLogin() {
     let returnData = {};
     const {Authorization, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/secondLogin`, {wcId, type: 2}, {headers: {Authorization}}).then(response => {return handler(response);});
+    await wechatDB.collection('user').updateOne({Authorization}, {$set: {wId: result.wId}});
     returnData = result;
     return returnData;
 }
@@ -101,6 +101,7 @@ async function getIPadLoginInfo() {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     await wechatDB.collection('userInfo').updateOne({wId}, {$set: result}, {upsert: true});
+    await wechatDB.collection('user').updateOne({wId}, {$set: {wcIds: result.wcId}});
     returnData = result;
     await initAddressList();
     return returnData;
@@ -299,17 +300,6 @@ async function postAcceptUser(data) {
 }
 
 /**
- * 输出终端二维码
- */
-async function getTerminalQRCode() {
-    const data = await postiPadLogin();
-    const file = await axios.get(data.qrCodeUrl);
-    qrcode.generate(file.data, (code) => {
-        console.log(code);
-    });
-}
-
-/**
  * 登录平台
  */
 async function wkLogin() {
@@ -339,6 +329,5 @@ module.exports = {
     postSendFile,
     postDelContact,
     postAcceptUser,
-    getTerminalQRCode,
     wkLogin
 };
