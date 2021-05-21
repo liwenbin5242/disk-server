@@ -24,3 +24,10 @@
    "wcId" :"19112831499@chatroom",
     "content": "招商/广发/中信/华夏还款提醒"
 }'
+
+*/10 * * * *    curl --location --request POST 'http://127.0.0.1:3000/sendText' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+   "wcId" :"19112831499@chatroom",
+    "content": "兴业还款提醒"
+}'
