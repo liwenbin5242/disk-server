@@ -14,16 +14,16 @@ async function getMsg(data) {
     switch (data.messageType) {
     case enums.messageCodes.FriendRequest: 
         logger.info('friend requset');
-        await logicServ.dealFriendRequest(data);
+        // await logicServ.dealFriendRequest(data);
         break;
     case enums.messageCodes.RoomMsg: 
-        logicServ.dealRoomMsg(data);
+        // logicServ.dealRoomMsg(data);
         break;
     case enums.messageCodes.PrivateChat: 
-        logicServ.dealPrivateMsg(data);
+        // logicServ.dealPrivateMsg(data);
         break;
     case enums.messageCodes.RoomTextMsg:
-        logicServ.roomTextMsg(data);
+        // logicServ.roomTextMsg(data);
         break;
     }
     return;
