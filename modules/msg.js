@@ -12,17 +12,17 @@ const logicServ = require('./logic');
 async function getMsg(data) {
     wechatDB.collection('messages').insertOne(data);
     switch (data.messageType) {
-    case enums.messageCodes.FriendRequest: 
+    case enums.MessageCodes.FriendRequest: 
         logger.info('friend requset');
         // await logicServ.dealFriendRequest(data);
         break;
-    case enums.messageCodes.RoomMsg: 
+    case enums.MessageCodes.RoomMsg: 
         // logicServ.dealRoomMsg(data);
         break;
-    case enums.messageCodes.PrivateChat: 
+    case enums.MessageCodes.PrivateChat: 
         // logicServ.dealPrivateMsg(data);
         break;
-    case enums.messageCodes.RoomTextMsg:
+    case enums.MessageCodes.RoomTextMsg:
         // logicServ.roomTextMsg(data);
         break;
     }

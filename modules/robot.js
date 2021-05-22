@@ -8,7 +8,7 @@ const enums = require('../lib/enums');
  */
 function getMsg(data) {
     switch (data.messageType) {
-    case enums.messageCodes.FriendRequest: 
+    case enums.MessageCodes.FriendRequest: 
         
     }
 }

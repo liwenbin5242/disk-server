@@ -44,16 +44,16 @@ async function roomTextMsg(data) {
     logger.info(action, 'action');
     if (action.length < 2) return;
     switch (action[0].trim()) {
-    case enums.autoReplyKeyWords.Reply:
-        content = content.replace(enums.autoReplyKeyWords.Reply, '');
+    case enums.AutoReplyKeyWords.Reply:
+        content = content.replace(enums.AutoReplyKeyWords.Reply, '');
         content = content.split(':');
         reqData.wcId = content[1];
         reqData.content = content[2];
         await wechatServ.postSendText(reqData);
         break;
-    case enums.autoReplyKeyWords.Add:
+    case enums.AutoReplyKeyWords.Add:
         message = await wechatDB.collection('messages').findOne({
-            messageType: enums.messageCodes.FriendRequest, 'data.msgId': parseInt(action[1])
+            messageType: enums.MessageCodes.FriendRequest, 'data.msgId': parseInt(action[1])
         });
         if (!message) break;
         reqData = {

@@ -1,5 +1,5 @@
 const config = require('config');
-
+const enums = require('../lib/enums');
 const axios = require('axios');
 const crypto = require('crypto');
 
@@ -15,6 +15,7 @@ const redis = require('../utils/rediser');
 const wechatDB = mongodber.use('wechat');
 const mailer = require('../scripts/mailer');
 const moment = require('moment');
+
 moment.locale('zh-cn');
 /**
  * 登录开放平台（第一步）
@@ -86,6 +87,8 @@ async function secondLogin() {
     const result = await axios.post(`${host}/secondLogin`, {wcId, type: 2}, {headers: {Authorization}}).then(response => {return handler(response);});
     await wechatDB.collection('user').updateOne({Authorization}, {$set: {wId: result.wId}});
     await wechatDB.collection('userInfo').updateOne({wcId}, {$set: {wId: result.wId}});    
+    await wechatDB.collection('friends').updateOne({wcId}, {$set: {wId: result.wId}});    
+    
     returnData = result;
     return returnData;
 }
@@ -126,10 +129,10 @@ async function initAddressList() {
  */
 async function getAddressList() {
     let returnData = {};
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const {Authorization, wId, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getAddressList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData = result;
-    await wechatDB.collection('friends').updateOne({wId}, {$set: result}, {upsert: true});
+    await wechatDB.collection('friends').updateOne({wcId}, {$set: result}, {upsert: true});
     return returnData || {};
 }
 
@@ -138,11 +141,11 @@ async function getAddressList() {
  */
 async function getContactLabelList() {
     let returnData = {};
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const {Authorization, wId, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getContactLabelList`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     returnData.labelList = result;
     returnData.wId = wId;
-    await wechatDB.collection('friends').updateOne({wId}, {$set: returnData}, {upsert: true});
+    await wechatDB.collection('friends').updateOne({wcId}, {$set: returnData});
     return returnData || {};
 }
 
@@ -155,8 +158,8 @@ async function getLabelContacts(labelId) {
     };
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getLabelContacts`, {wId, labelId}, {headers: {Authorization}}).then(response => {return handler(response);});
-    returnData.list = result;
-    return returnData || {};
+    returnData.list = result || [];
+    return returnData;
 }
 
 /**
@@ -169,7 +172,15 @@ async function getRoujiFriendCircle() {
         return {};
     }
     let returnData = {count: 0};
-    const {list} = await getLabelContacts('1');
+    // 根据标签获取微信好友已失效
+    // const {list} = await getLabelContacts(enums.LabelConfig['肉鸡']);
+
+    const {wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const {friends} = await wechatDB.collection('friends').findOne({wId});
+    const list = friends.map(friend => {
+        return {userName: friend};
+    });
+
     for (let i of list) {
         const results = await getFriendCircle(i.userName);
         for (let sns of results.sns) {
@@ -184,6 +195,7 @@ async function getRoujiFriendCircle() {
             }
         }
     }
+    logger.info(returnData.count);
     return returnData;
 }
 
@@ -191,7 +203,7 @@ async function getRoujiFriendCircle() {
  * 获取好友的朋友圈
  * @param {好友微信id} wcId 
  */
-async function getFriendCircle(wcId, firstPageMd5, maxId) {
+async function getFriendCircle(wcId, firstPageMd5 = '', maxId = 0) {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getFriendCircle`, {wId, wcId, firstPageMd5, maxId}, {headers: {Authorization}}).then(response => {return handler(response);});
     return result;
