@@ -89,6 +89,7 @@ async function secondLogin() {
     const {Authorization, wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/secondLogin`, {wcId, type: 2}, {headers: {Authorization}}).then(response => {return handler(response);});
     await wechatDB.collection('user').updateOne({Authorization}, {$set: {wId: result.wId}});
+    await wechatDB.collection('userInfo').updateOne({wcId}, {$set: {wId: result.wId}});    
     returnData = result;
     return returnData;
 }
@@ -100,8 +101,8 @@ async function getIPadLoginInfo() {
     let returnData = {};
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/getIPadLoginInfo`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
-    await wechatDB.collection('userInfo').updateOne({wId}, {$set: result}, {upsert: true});
-    await wechatDB.collection('user').updateOne({wId}, {$set: {wcIds: result.wcId}});
+    await wechatDB.collection('userInfo').updateOne({wcId: result.wcId}, {$set: result}, {upsert: true});
+    await wechatDB.collection('user').updateOne({wId}, {$set: {wcIds: [result.wcId]}});
     returnData = result;
     await initAddressList();
     return returnData;
