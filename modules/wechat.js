@@ -59,7 +59,6 @@ async function getIsOnline() {
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
     if (!returnData)  {mailer(); logger.warn('off line');}
-   
     return returnData;
 }
 
