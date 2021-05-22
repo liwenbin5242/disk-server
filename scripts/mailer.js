@@ -1,6 +1,8 @@
 'use strict';
 const nodemailer = require('nodemailer');
 const { logger } = require('../utils/logger');
+const moment = require('moment');
+
 // async..await is not allowed in global scope, must use a wrapper
 async function main() {
     // Generate test SMTP service account from ethereal.email
@@ -32,7 +34,7 @@ async function main() {
         from: 'liwenbin5242@163.com', // sender address
         to: '294723284@qq.com', // list of receivers
         subject: '掉线通知', // Subject line
-        text: '机器人已掉线', // plain text body
+        text: `机器人已掉线,时间${moment().format()}`, // plain text body
         html: '<b>机器人已掉线</b>', // html body
     });
 
@@ -43,4 +45,4 @@ async function main() {
     logger('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
-main().catch(console.error);
+module.exports = main;
