@@ -164,9 +164,8 @@ async function getLabelContacts(labelId) {
  */
 async function getRoujiFriendCircle() {
     // 掉线
-    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')}); 
-    if (!(await getIsOnline(wId, Authorization))) {
-        logger.info('wechat is not online');
+    if (!(await getIsOnline())) {
+        logger.warn('wechat is not online');
         return {};
     }
     let returnData = {count: 0};

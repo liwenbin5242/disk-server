@@ -3,7 +3,7 @@ module.exports = {
         name: 'wechat2tieba',
         port: 3000,
         url: 'http://81.70.203.247:3000',
-        env: 'test'
+        env: 'production'
     },
     host: 'http://39.106.205.87:9899',
     PORT: '3000',
