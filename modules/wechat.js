@@ -326,7 +326,7 @@ async function forwardSns() {
     if (!frientCircleSNS) return;
     await axios.post(`${host}/forwardSns`, {wId, content: frientCircleSNS.objectDesc.xml}, {headers: {Authorization}}).then(response => {return handler(response);});
     for (let comment of frientCircleSNS.snsComments ) {
-        await axios.post(`${host}/forwardSns`, {wId, id: frientCircleSNS.id, replyCommentId: 0, content: comment}, {headers: {Authorization}}).then(response => {return handler(response);});
+        await axios.post(`${host}/snsComment`, {wId, id: frientCircleSNS.id, replyCommentId: 0, content: comment.content}, {headers: {Authorization}}).then(response => {return handler(response);});
     }
     await wechatDB.collection('frientCircleSNS').updateOne({id: frientCircleSNS.id}, {$set: { send: true}});
 }
