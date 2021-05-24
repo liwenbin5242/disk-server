@@ -17,7 +17,7 @@ app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 
 app.all('*', (req, res, next)=> {
-    logger.info(`from ${req.ip} ${req.method} ${req.url} ${req.path}`);
+    logger.info(`Method:${req.method} from ${req.ip.slice(7)}${req.path}`);
     next();
 });
 app.use(express.static('public'));

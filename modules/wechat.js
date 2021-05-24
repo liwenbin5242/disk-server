@@ -316,6 +316,21 @@ async function wkLogin() {
         await postMemberLogin();
     }
 }
+
+/**
+ * 转发朋友圈
+ */
+async function forwardSns() {
+    const frientCircleSNS = await wechatDB.collection('frientCircleSNS').findOne({send: false});
+    const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});    
+    if (!frientCircleSNS) return;
+    await axios.post(`${host}/forwardSns`, {wId, content: frientCircleSNS.objectDesc.xml}, {headers: {Authorization}}).then(response => {return handler(response);});
+    for (let comment of frientCircleSNS.snsComments ) {
+        await axios.post(`${host}/forwardSns`, {wId, id: frientCircleSNS.id, replyCommentId: 0, content: comment}, {headers: {Authorization}}).then(response => {return handler(response);});
+    }
+    await wechatDB.collection('frientCircleSNS').updateOne({id: frientCircleSNS.id}, {$set: { send: true}});
+}
+
 module.exports = {
     postMemberLogin,
     postiPadLogin,
@@ -337,5 +352,6 @@ module.exports = {
     postSendFile,
     postDelContact,
     postAcceptUser,
-    wkLogin
+    wkLogin,
+    forwardSns
 };
