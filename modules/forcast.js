@@ -29,10 +29,10 @@ async function sendForcast( ) {
     const data = forcast.data.responses[0].weather[0];
 
     // for (let chatroom of chatrooms) {
-    let content = `当前天气:${data.current.capAbbr},风力:${data.current.pvdrWindDir} ${data.current.pvdrWindSpd},温度:${data.current.temp}摄氏度,空气质量:${data.current.aqiSeverity}\n`;
+    let content = `当前天气:${data.current.capAbbr},风力:${data.current.pvdrWindDir} ${data.current.pvdrWindSpd},温度:${data.current.temp}摄氏度,空气质量:${data.current.aqiSeverity}\n\n`;
 
     for (let forecast of data.forecast.days) {
-        content += `${moment(forecast.daily.valid).format('YYYY年MM月DD日')}: 天气:${forecast.daily.pvdrCap} 风力:${forecast.daily.pvdrWindDir} ${forecast.daily.pvdrWindSpd}, 温度:${forecast.daily.tempLo}-${forecast.daily.tempHi}摄氏度\n`;
+        content += `${moment(forecast.daily.valid).format('YYYY年MM月DD日')}: 天气:${forecast.daily.pvdrCap} 风力:${forecast.daily.pvdrWindDir} ${forecast.daily.pvdrWindSpd}, 温度:${forecast.daily.tempLo}-${forecast.daily.tempHi}摄氏度\n\n`;
     }
     await wechatServ.postSendText({
         wcId: '18628314657@chatroom',
