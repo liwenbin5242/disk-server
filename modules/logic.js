@@ -7,7 +7,7 @@ const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
 const wechatServ = require('./wechat');
 const {logger} = require('../utils/logger');
-const config = require('config');
+
 const enums = require('../lib/enums');
 
 /**
@@ -22,10 +22,14 @@ async function dealFriendRequest(reqData) {
             return resolve(result);             
         });
     });
+    await wechatServ.postAcceptUser(reqData);
     // 发送消息到冲冲冲
     const msgData = {
-        content: `来自: ${jsonData.msg.$.fromusername} 的好友添加请求,请求备注:${reqData.data.remark} \n\n
-            消息id:${reqData.data.msgId} 请及时处理!!`,
+        content: `来自:${jsonData.msg.$.fromusername} 的好友添加请求 \n\n
+            请求备注:${reqData.data.remark} \n\n
+            消息id:${reqData.data.msgId} !! \n\n
+            好友已添加
+            `,
         wcId: '20474388408@chatroom'
     };
     await wechatServ.postSendText(msgData);
@@ -37,11 +41,12 @@ async function dealFriendRequest(reqData) {
  * @param {*} data 
  */
 async function roomTextMsg(data) {
+    const {nickName} = await wechatDB.collection('userInfo').findOne();
     let content = data.data.content;
-    let mentioned = content.includes(config.get('MY_NAME'));
+    let mentioned = content.includes(nickName);
     let reqData = {}, message = {};
     if (!mentioned) return;
-    content = content.replace(config.get('MY_NAME'), '');
+    content = content.replace(nickName, '');
     let action = content.split(':');
     logger.info(content, 'content');
     logger.info(action, 'action');

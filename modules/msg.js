@@ -23,7 +23,7 @@ async function getMsg(data) {
         // logicServ.dealPrivateMsg(data);
         break;
     case enums.MessageCodes.RoomTextMsg:
-        // logicServ.roomTextMsg(data);
+        logicServ.roomTextMsg(data);
         break;
     }
     return;
