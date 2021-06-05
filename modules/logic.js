@@ -24,7 +24,8 @@ async function dealFriendRequest(reqData) {
     });
     // 发送消息到冲冲冲
     const msgData = {
-        content: `来自: ${jsonData.msg.$.fromusername} 的好友添加请求,请求备注:${reqData.data.remark}。消息id:${reqData.data.msgId} 请及时处理!!`,
+        content: `来自: ${jsonData.msg.$.fromusername} 的好友添加请求,请求备注:${reqData.data.remark} \n\n
+            消息id:${reqData.data.msgId} 请及时处理!!`,
         wcId: '20474388408@chatroom'
     };
     await wechatServ.postSendText(msgData);
