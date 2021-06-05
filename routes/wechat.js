@@ -114,7 +114,7 @@ router.post('/createChatroom', async function(req, res) {
  * 发送消息
  */
 router.post('/sendText', async function(req, res) {
-    const result = wechatServ.postSendText(req.body);
+    const result = await wechatServ.postSendText(req.body);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
