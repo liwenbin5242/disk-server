@@ -260,7 +260,7 @@ async function postSendText(data) {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
 
     try {
-        await redis.redlock.lock(Authorization, 3);
+        await redis.redlock.lock(Authorization, 3000);
         const result = await axios.post(`${host}/sendText`, {wId, wcId: data.wcId, content: data.content}, {headers: {Authorization}}).then(response => {return handler(response);});
         returnData = result;
         return returnData || {status: 'failed'};
