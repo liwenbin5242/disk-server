@@ -1,3 +1,5 @@
+'use strict';
+
 const mongodber = require('../utils/mongodber');
 const wechatDB = mongodber.use('wechat');
 

@@ -1,4 +1,4 @@
-
+'use strict';
 const {logger} = require('../utils/logger');
 const enums = require('../lib/enums');
 

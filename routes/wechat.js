@@ -1,8 +1,9 @@
+'use strict';
 const express = require('express');
 const router = express.Router();
 
 const returnCode = require('../utils/returnCodes');
-const {reqHandler} = require('../utils/reqHandler');
+const { reqHandler } = require('../utils/reqHandler');
 
 const wechatServ = require('../modules/wechat');
 
@@ -98,7 +99,7 @@ router.post('/queryLoginWx', async function(req, res) {
  * 发送消息到冲冲冲
  */
 router.post('/RoujiFriendCircleToRoom', async function(req, res) {
-    const result = wechatServ.postRoujiFriendCircleToRoom();
+    const result = await wechatServ.postRoujiFriendCircleToRoom();
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
@@ -106,7 +107,7 @@ router.post('/RoujiFriendCircleToRoom', async function(req, res) {
  * 建群
  */
 router.post('/createChatroom', async function(req, res) {
-    const result = wechatServ.postCreateChatroom();
+    const result = await wechatServ.postCreateChatroom();
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
@@ -122,7 +123,7 @@ router.post('/sendText', async function(req, res) {
  * 发送消息
  */
 router.post('/sendImage', async function(req, res) {
-    const result = wechatServ.postSendImage(req.body);
+    const result = await wechatServ.postSendImage(req.body);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
@@ -130,7 +131,7 @@ router.post('/sendImage', async function(req, res) {
  * 发送消息
  */
 router.post('/sendFile', async function(req, res) {
-    const result = wechatServ.postSendFile(req.body);
+    const result = await wechatServ.postSendFile(req.body);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
@@ -138,7 +139,7 @@ router.post('/sendFile', async function(req, res) {
  * 删除好友
  */
 router.post('/delContact', async function(req, res) {
-    const result = wechatServ.postdelContact(req.body);
+    const result = await wechatServ.postdelContact(req.body);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
@@ -146,7 +147,7 @@ router.post('/delContact', async function(req, res) {
  * 同意添加好友
  */
 router.post('/acceptUser', async function(req, res) {
-    const result = wechatServ.postacceptUser(req.body);
+    const result = await wechatServ.postacceptUser(req.body);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 

@@ -1,5 +1,6 @@
+'use strict';
 const config = require('config');
-const enums = require('../lib/enums');
+
 const axios = require('axios');
 const crypto = require('crypto');
 
@@ -59,7 +60,7 @@ async function getIsOnline() {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
-    if (!returnData)  {mailer(); logger.warn('off line');}
+    if (!returnData)  {mailer(from, to, subject, text, html); logger.warn('off line');}
     return returnData;
 }
 

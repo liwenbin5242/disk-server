@@ -4,20 +4,17 @@ const { logger } = require('../utils/logger');
 const moment = require('moment');
 
 // async..await is not allowed in global scope, must use a wrapper
-async function main() {
-    // Generate test SMTP service account from ethereal.email
-    // Only needed if you don't have a real mail account for testing
-    // let testAccount = await nodemailer.createTestAccount({
-    //     host: SmtpConfig.host,
-    //     port: SmtpConfig.port,
-    //     secure: false,
-    //     ignoreTLS: true,
-    //     auth: {
-    //         user: SmtpConfig.user,
-    //         pass: SmtpConfig.pass
-    //     }
-    // });
 
+/**
+ * 
+ * @param {发件人} from 
+ * @param {收件人} to 
+ * @param {主题} subject 
+ * @param {内容} text 
+ * @param {内容} html 
+ */
+async function main(from, to, subject, text, html) {
+   
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
         host: 'smtp.163.com',
@@ -31,7 +28,7 @@ async function main() {
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-        from: 'liwenbin5242@163.com', // sender address
+        from, // sender address
         to: '294723284@qq.com', // list of receivers
         subject: '掉线通知', // Subject line
         text: `机器人已掉线,时间${moment().format()}`, // plain text body
