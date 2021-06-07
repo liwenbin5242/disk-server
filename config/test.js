@@ -27,5 +27,10 @@ module.exports = {
     MY_NAME: '@A001',
     DEDAO_SERV: {
         url: 'http://81.70.203.247:4567',
-    }
+    },
+    FORCAST_ROOMS: [
+        {id: '18628314657@chatroom', address: {province: '河南', city: '辉县'}}, // 家庭群
+        {id: '21676689835@chatroom', address: {province: '河南', city: '郑州'}}, // 名媛汇
+        {id: '20950390928@chatroom', address: {province: '河南', city: '郑州'}}, // myx
+    ]
 };
