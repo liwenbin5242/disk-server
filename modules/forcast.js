@@ -20,7 +20,7 @@ async function sendForcast() {
         await page.screenshot({ path: `./public/${moment().format('YYYY-MM-DD')}.png` });
         await wechatServ.postSendImage({
             wcId: room.id,
-            content: `http://81.70.203.247:3000/${moment().format()}.png`
+            content: `http://81.70.203.247:3000/${moment().format('YYYY-MM-DD')}.png`
         });
     }
 }
