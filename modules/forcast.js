@@ -11,7 +11,7 @@ moment.locale('zh-cn');
  * 发送天气信息
  */
 async function sendForcast() {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox']});
     const page = await browser.newPage();
     logger.info('forcast begin');
     page.setViewport({width: 920, height: 1250}); // 设置视窗大小为 920*1250 适应手机尺寸
