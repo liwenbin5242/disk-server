@@ -1,6 +1,4 @@
 'use strict';
-const config = require('config');
-
 const puppeteer = require('puppeteer');
 
 const moment = require('moment');
