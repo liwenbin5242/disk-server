@@ -29,17 +29,17 @@ async function main(from, to, subject, text, html) {
     // send mail with defined transport object
     let info = await transporter.sendMail({
         from, // sender address
-        to: '294723284@qq.com', // list of receivers
-        subject: '掉线通知', // Subject line
-        text: `机器人已掉线,时间${moment().format()}`, // plain text body
-        html: '<b>机器人已掉线</b>', // html body
+        to,  //  '294723284@qq.com', list of receivers
+        subject, // '掉线通知', Subject line
+        text, // `机器人已掉线,时间${moment().format()}`,  plain text body
+        html, // '<b>机器人已掉线</b>',html body
     });
 
-    logger('Message sent: %s', info.messageId);
+    logger.warn('Message sent: %s', info.messageId);
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
     // Preview only available when sending through an Ethereal account
-    logger('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    logger.warn('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 module.exports = main;

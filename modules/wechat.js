@@ -60,7 +60,7 @@ async function getIsOnline() {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
-    if (!returnData)  {mailer(from, to, subject, text, html); logger.warn('off line');}
+    if (!returnData)  {mailer('liwenbin5242@163.com', '294723284@qq.com', '掉线通知', `机器人已掉线,时间${moment().format('YYYY-MM-DD')}`, '<b>机器人已掉线</b>'); logger.warn('off line');}
     return returnData;
 }
 
