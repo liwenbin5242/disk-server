@@ -176,8 +176,8 @@ async function getRoujiFriendCircle() {
     // 根据标签获取微信好友已失效
     // const {list} = await getLabelContacts(enums.LabelConfig['肉鸡']);
 
-    const {wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const {friends} = await wechatDB.collection('friends').findOne({wId});
+    const {wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const {friends} = await wechatDB.collection('friends').findOne({wcId});
     const list = friends.map(friend => {
         return {userName: friend};
     });
