@@ -31,8 +31,8 @@ async function text2rush() {
         });
         str += (jsonData.TimelineObject.contentDesc[0] + '\n\n');
     }
-    await fs.writeFileSync(`./public/${moment().format('YYYY-MM-DD')}.txt`, str);
-    await wechatServ.postSendFile({wcId: '20474388408@chatroom', path: `${config.get('app.url')}/${moment().format('YYYY-MM-DD')}.txt`, fileName: '昨日朋友圈文本'});
+    await fs.writeFileSync(`./public/friendSNS/${moment().format('YYYY-MM-DD')}.txt`, str);
+    await wechatServ.postSendFile({wcId: '20474388408@chatroom', path: `${config.get('app.url')}/friendSNS/${moment().format('YYYY-MM-DD')}.txt`, fileName: '昨日朋友圈文本'});
 }
 
 module.exports = {
