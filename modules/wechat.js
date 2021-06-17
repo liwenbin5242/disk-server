@@ -60,7 +60,7 @@ async function getIsOnline() {
     const {Authorization, wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
     const result = await axios.post(`${host}/isOnline`, {wId}, {headers: {Authorization}}).then(response => {return handler(response);});
     const returnData = result.isOnline;
-    if (!returnData)  {mailer(from, to, subject, text, html); logger.warn('off line');}
+    if (!returnData)  {mailer('liwenbin5242@163.com', '294723284@qq.com', '掉线通知', `机器人已掉线,时间${moment().format('YYYY-MM-DD')}`, '<b>机器人已掉线</b>'); logger.warn('off line');}
     return returnData;
 }
 
@@ -176,8 +176,8 @@ async function getRoujiFriendCircle() {
     // 根据标签获取微信好友已失效
     // const {list} = await getLabelContacts(enums.LabelConfig['肉鸡']);
 
-    const {wId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const {friends} = await wechatDB.collection('friends').findOne({wId});
+    const {wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    const {friends} = await wechatDB.collection('friends').findOne({wcId});
     const list = friends.map(friend => {
         return {userName: friend};
     });
@@ -364,5 +364,5 @@ module.exports = {
     postDelContact,
     postAcceptUser,
     wkLogin,
-    forwardSns
+    forwardSns,
 };
