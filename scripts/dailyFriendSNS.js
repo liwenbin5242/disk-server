@@ -1,12 +1,9 @@
 'use strict';
 const config = require('config');
-const axios = require('axios');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
 const wechatServ = require('../modules/wechat');
 
-const {logger} = require('../utils/logger');
-const {handler} = require('../utils/handler');
 const mongodber = require('../utils/mongodber');
 
 const wechatDB = mongodber.use('wechat');
