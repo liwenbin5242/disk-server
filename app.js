@@ -7,7 +7,6 @@ const {wechatSchedule} = require('./lib/wechatSchedule');
 const wechatRouter = require('./routes/wechat');
 const bar = require('./routes/bar');
 const msg = require('./routes/msg');
-const chromium = require('./routes/chromium');
 const app = express();
 
 // view engine setup
@@ -25,7 +24,6 @@ app.use(express.static('public'));
 app.use('/', wechatRouter);
 app.use('/bar', bar);
 app.use('/msg', msg);
-app.use('/chromium', chromium);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

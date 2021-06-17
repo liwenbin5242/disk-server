@@ -364,5 +364,5 @@ module.exports = {
     postDelContact,
     postAcceptUser,
     wkLogin,
-    forwardSns
+    forwardSns,
 };
