@@ -176,12 +176,31 @@ async function getRoujiFriendCircle() {
     // 根据标签获取微信好友已失效
     // const {list} = await getLabelContacts(enums.LabelConfig['肉鸡']);
 
-    const {wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
-    const {friends} = await wechatDB.collection('friends').findOne({wcId});
+    // const {wcId} = await wechatDB.collection('user').findOne({account: config.get('account')});
+    // const {friends} = await wechatDB.collection('friends').findOne({wcId});
+    const friends = [ 
+        'wxid_2h04j87n3hw522', 
+        'wxid_phml8gr0ozk622', 
+        'wxid_8ldt3uae29kq22', 
+        'wxid_tkddkwqy50lw22', 
+        'wxid_n6456c42psjt12', 
+        'wxid_8jzs599i4cdl22', 
+        'wxid_dl8pirdlyr7812', 
+        'tianjuan639399', 
+        'wxid_6s8ogp0zcoi121', 
+        'wxid_jff00c8g4sre22', 
+        'wxid_b0euj9fh67rz41', 
+        'wxid_g2kxlsivy8x412', 
+        'wxid_ikka4ubz7zjk22', 
+        'wxid_6bn4e2ppx4wv12', 
+        'douniwan781687698', 
+        'wxid_8pn76au1r3n522', 
+        'wxid_5634436385212', 
+        'wxid_qpmjx89pzfml22'
+    ];
     const list = friends.map(friend => {
         return {userName: friend};
-    });
-
+    }); 
     for (let i of list) {
         const results = await getFriendCircle(i.userName);
         for (let sns of results.sns) {
