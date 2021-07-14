@@ -5,7 +5,7 @@ module.exports = {
         url: 'http://81.70.203.247:3000',
         env: 'test'
     },
-    host: 'http://39.106.205.87:9899',
+    host: 'http://119.29.18.234:9899',
     PORT: '3000',
     account: '15810185602',
     password: '123456',
