@@ -151,4 +151,8 @@ router.post('/acceptUser', async function(req, res) {
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 });
 
+router.get('/', reqHandler(async function(req, res) {
+    res.json({code: 0, msg: 'ok', data: {}});
+}));
+
 module.exports = router;

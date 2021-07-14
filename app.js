@@ -7,6 +7,7 @@ const {wechatSchedule} = require('./lib/wechatSchedule');
 const wechatRouter = require('./routes/wechat');
 const bar = require('./routes/bar');
 const msg = require('./routes/msg');
+const healthCheck = require('./routes/healthCheck');
 const app = express();
 
 // view engine setup
