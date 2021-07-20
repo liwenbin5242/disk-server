@@ -33,7 +33,7 @@ async function initRedis() {
     // 初始化redis数据库连接
     await initRedis();
     const app = require('../app');
-    const port = config.get('PORT');
+    const port = config.get('app.port');
     app.set('port', port);
     const server = http.createServer(app);
     server.listen(port);

@@ -1,14 +1,11 @@
 module.exports = {
     app: {
-        name: 'wechat2tieba',
-        port: 3000,
-        url: 'http://81.70.203.247:3000',
+        name: 'baidu-disk',
+        port: 3101,
+        url: 'http://81.70.203.247:3101',
         env: 'dev'
     },
-    host: 'http://119.29.18.234:9899',
-    PORT: '3000',
-    account: '15810185602',
-    password: '123456',
+    SECRET: 'baidudicksecret',
     MONGODBS: {
         wechat: {
             host: 'mongodb://81.70.203.247:7001/wechat',

@@ -2,12 +2,8 @@ const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { logger } = require('./utils/logger');
-const {wechatSchedule} = require('./lib/wechatSchedule');
 
-const wechatRouter = require('./routes/wechat');
-const bar = require('./routes/bar');
-const msg = require('./routes/msg');
-const healthCheck = require('./routes/healthCheck');
+const userRotes = require('./routes/user');
 const app = express();
 
 // view engine setup
@@ -22,9 +18,7 @@ app.all('*', (req, res, next)=> {
     next();
 });
 app.use(express.static('public'));
-app.use('/', wechatRouter);
-app.use('/bar', bar);
-app.use('/msg', msg);
+app.use('/user', userRotes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -41,5 +35,4 @@ app.use(function(err, req, res) {
     res.status(err.status || 500);
     res.render('error');
 });
-wechatSchedule();
 module.exports = app;
