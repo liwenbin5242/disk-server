@@ -1,5 +1,5 @@
 {
-  "name": "wechat2tieba",
+  "name": "baidu-disk",
   "version": "1.1.0",
   "private": true,
   "scripts": {
@@ -21,7 +21,8 @@
     "redlock": "^4.2.0",
     "ioredis": "4.19.4",
     "apidoc": "^0.28.1",
-    "jwt": "^0.2.0"
+    "argon2": "0.28.2",
+    "jose": "3.14.3"
   },
   "apidoc": {
     "title": "接口文档",
