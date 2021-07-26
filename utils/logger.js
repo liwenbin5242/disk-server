@@ -10,7 +10,7 @@ log4js.configure({
         },
         {
             type: 'dateFile',
-            filename: 'logs/wecaht2tieba.log',
+            filename: 'logs/baidu-disk.log',
             pattern: '_yyyy-MM-dd',
             alwaysIncludePattern: false,
             category: 'dateFileLog'

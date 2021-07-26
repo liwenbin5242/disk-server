@@ -1,3 +1,4 @@
+const errCode = require('./errCodes')
 /**
  * 默认express错误处理包裹
  * @param {String} msg
@@ -15,9 +16,8 @@ exports.reqHandler = function reqHandler(handler) {
                 logLevel: 'error',
                 errStack: err.stack || err,
             });
-            err.message = errMsg;
             logger.error(err);
-            return resp.end('好像出错了呢，快看下吧');
+            return resp.json({code: errCode[err.code] || errCode['INTERNAL_ERR'], msg: err.message, data:{}});
         }
     };
 };

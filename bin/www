@@ -51,7 +51,7 @@ function onError(error) {
         throw error;
     }
 
-    const bind = config.get('PORT');
+    const bind = config.get('app.port');
 
     // handle specific listen errors with friendly messages
     switch (error.code) {

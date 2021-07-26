@@ -25,6 +25,8 @@ module.exports = {
     DEDAO_SERV: {
         url: 'http://81.70.203.247:4567',
     },
-    privateKey: 'EmZuVAjWHdkztCrNDvkMlTVmZMomFmnh'
-
+    privateKey: 'EmZuVAjWHdkztCrNDvkMlTVmZMomFmnh',
+    CORS: [
+        'http://localhost:9528'
+    ]
 };

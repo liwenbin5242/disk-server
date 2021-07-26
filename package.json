@@ -22,7 +22,10 @@
     "ioredis": "4.19.4",
     "apidoc": "^0.28.1",
     "argon2": "0.28.2",
-    "jose": "3.14.3"
+    "jsonwebtoken": "8.5.1",
+    "path-to-regexp": "^6.1.0",
+    "url":"^0.11.0",
+    "cors": "2.8.5"
   },
   "apidoc": {
     "title": "接口文档",

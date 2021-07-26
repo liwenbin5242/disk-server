@@ -29,5 +29,8 @@ module.exports = {
         secret: 'EmZuVAjWHdkztCrNDvkMlTVmZMomFmnh',
         encode: 'HS256'
     },
-    privateKey: 'EmZuVAjWHdkztCrNDvkMlTVmZMomFmnh'
+    privateKey: 'EmZuVAjWHdkztCrNDvkMlTVmZMomFmnh',
+    CORS: [
+        'http://localhost:9528'
+    ]
 };
