@@ -8,6 +8,7 @@ const wechatDB = mongodber.use('wechat');
 const moment = require('moment');
 const axios = require('axios')
 
+const diskServ = require('./disk')
 moment.locale('zh-cn');
 
 /**
@@ -20,8 +21,9 @@ async function postUserRegister(username, password) {
     const userInfo = {
         username,
         password: await argonEncryption(password),
+        avatar: '',
         baidu_username: '',
-        asscss_token: '',
+        access_token: '',
         refresh_token: '',
     };
     const authInfo = await wechatDB.collection('diskUser').findOne({username});
@@ -76,8 +78,26 @@ async function postUserLogin(username, password) {
     await wechatDB.collection('diskUser').updateOne({username}, {$set:{ access_token: data.data.access_token, refresh_token: data.data.refresh_token}})
     return returnData;
 }
+
+/**
+ * 获取用户基本信息
+ * @param {*} username 
+ */
+async function getUserInfo(username) {
+    try {
+        await diskServ.getUserinfo(username)
+    } catch(err) {
+        
+    }
+    const user = await wechatDB.collection('diskUser').findOne({username})
+    if(!user) {
+        throw new Error('用户不存在')
+    }
+    return user
+}
 module.exports = {
     postUserRegister,
     postUserLogin,
-    bindDisk
+    bindDisk,
+    getUserInfo
 };

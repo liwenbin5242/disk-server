@@ -22,6 +22,8 @@ async function getUserinfo(username) {
         throw new Error('用户不存在');
     }
     const data = await axios.get(`https://pan.baidu.com/rest/2.0/xpan/nas?method=uinfo&access_token=${authInfo.access_token}`)
+    await wechatDB.collection('diskUser').updateOne({username}, {$set: {avatar: data.data.avatar_url, baidu_username: data.data.baidu_name}})
+
     return data.data
 }
 
@@ -52,7 +54,7 @@ async function getUserinfo(username) {
     if (!authInfo) {
         throw new Error('用户不存在');
     }
-    const data = await axios.get(`https://pan.baidu.com/rest/2.0/xpan/file?method=list&access_token=${authInfo.access_token}`)
+    const data = await axios.get(`https://pan.baidu.com/rest/2.0/xpan/file?method=list&access_token=${authInfo.access_token}&web=web`)
       return data.data
 
 }

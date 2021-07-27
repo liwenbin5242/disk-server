@@ -3,7 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const { logger } = require('./utils/logger');
 const { tokenAuth } = require('./lib/auth')
-const { urlecode } = require('./lib/utils')
+const { urlecodes } = require('./lib/utils')
 
 const userRotes = require('./routes/user');
 const diskRotes = require('./routes/disk');
@@ -19,8 +19,8 @@ app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(urlecode);
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(urlecodes);
+// app.use(express.static(path.join(__dirname, 'public')));
 app.all('*', tokenAuth, )
 app.all('*', (req, res, next)=> {
     logger.info(`Method:${req.method} from ${req.ip.slice(7)}${req.path}`);
@@ -56,4 +56,7 @@ app.use(function(err, req, res) {
     res.render('error');
 });
 
+app.use('/oauth_redirect', async(req, res, next) => {
+    req
+})
 module.exports = app;

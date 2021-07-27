@@ -19,9 +19,10 @@ router.post('/login', reqHandler(async function(req, res) {
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
-/* 用户登录获取token*/
+/* 获取用户基本信息*/
 router.get('/info', reqHandler(async function(req, res) {
-    res.json({code: returnCode.SUCCESS, data: req.user, msg: ''});
+    const result = await userServ.getUserInfo(req.user.username);
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
 /*用户通过code换取access_token和refresh_token */
