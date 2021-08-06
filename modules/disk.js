@@ -4,25 +4,37 @@
 const { argonEncryption, argonVerification } = require('../lib/utils');
 const { encodeJwt, decodeJwt } = require('../lib/utils');
 const mongodber = require('../utils/mongodber');
-const wechatDB = mongodber.use('wechat');
+const diskDB = mongodber.use('disk');
 const moment = require('moment');
-const axios = require('axios')
+const axios = require('axios');
+const utils = require('../lib/utils');
 
 moment.locale('zh-cn');
 
 /**
- * 获取百度用户信息
+ * 根据username获取用户绑定百度网盘的用户信息
  * @param {账号} username
  */
 async function getUserinfo(username) {
     const returnData = {};
-   
-    const authInfo = await wechatDB.collection('diskUser').findOne({username});
+    let update = [];
+    const authInfo = await diskDB.collection('diskUser').findOne({username});
     if (!authInfo) {
         throw new Error('用户不存在');
     }
-    const data = await axios.get(`https://pan.baidu.com/rest/2.0/xpan/nas?method=uinfo&access_token=${authInfo.access_token}`)
-    await wechatDB.collection('diskUser').updateOne({username}, {$set: {avatar: data.data.avatar_url, baidu_username: data.data.baidu_name}})
+    const tasks = authInfo.disks.map( disk => {
+        return utils.bdapis.getbdUserByToken(disk.access_token);
+    })
+    await Promise.all(tasks).then( result =>{
+        update.push({
+            baidu_name: result.baidu_name,
+            netdisk_name: result.netdisk_name,
+            avatar_url: result.avatar_url,
+            vip_type: result.vip_type,
+            uk: result.uk
+        })
+    })
+    await diskDB.collection('diskUser').updateOne({username}, {$set: {disks}})
 
     return data.data
 }
@@ -32,14 +44,14 @@ async function getUserinfo(username) {
  * @param {账号} username 
  */
  async function getDiskinfo(username) {
-    const returnData = {};
-   
-    const authInfo = await wechatDB.collection('diskUser').findOne({username});
-    if (!authInfo) {
-        throw new Error('用户不存在');
+    const returnData = { list: []};
+    const disks = await diskDB.collection('DiskUser').find({username}).toArray();
+    if (!disks.length) {
+        return returnData;
     }
-    const data = await axios.get(`https://pan.baidu.com/api/quota?access_token=${authInfo.access_token}`)
-    return data.data
+    const result = await utils.promiseTasks(disks, 'getQuotaByToken');
+    returnData.list = result
+    return returnData
 
 }
 
@@ -50,7 +62,7 @@ async function getUserinfo(username) {
  async function getDisklist(username) {
     const returnData = {};
    
-    const authInfo = await wechatDB.collection('diskUser').findOne({username});
+    const authInfo = await diskDB.collection('diskUser').findOne({username});
     if (!authInfo) {
         throw new Error('用户不存在');
     }
@@ -66,7 +78,7 @@ async function getUserinfo(username) {
  async function getDisklistall(username, path) {
     const returnData = {};
    
-    const authInfo = await wechatDB.collection('diskUser').findOne({username});
+    const authInfo = await diskDB.collection('diskUser').findOne({username});
     if (!authInfo) {
         throw new Error('用户不存在');
     }
@@ -82,7 +94,7 @@ async function getUserinfo(username) {
  async function getDiskSearch(username, key, dir) {
     const returnData = {};
    
-    const authInfo = await wechatDB.collection('diskUser').findOne({username});
+    const authInfo = await diskDB.collection('diskUser').findOne({username});
     if (!authInfo) {
         throw new Error('用户不存在');
     }

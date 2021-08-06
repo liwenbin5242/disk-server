@@ -2,13 +2,14 @@
 // const axios = require('axios');
 
 const { argonEncryption, argonVerification } = require('../lib/utils');
-const { encodeJwt, decodeJwt } = require('../lib/utils');
+const { encodeJwt} = require('../lib/utils');
 const mongodber = require('../utils/mongodber');
-const wechatDB = mongodber.use('wechat');
-const moment = require('moment');
-const axios = require('axios')
+const diskDB = mongodber.use('disk');
+const axios = require('axios');
 
-const diskServ = require('./disk')
+const diskServ = require('./disk');
+const utils = require('../lib/utils')
+const moment = require('moment');
 moment.locale('zh-cn');
 
 /**
@@ -21,16 +22,14 @@ async function postUserRegister(username, password) {
     const userInfo = {
         username,
         password: await argonEncryption(password),
+        name: '',
         avatar: '',
-        baidu_username: '',
-        access_token: '',
-        refresh_token: '',
     };
-    const authInfo = await wechatDB.collection('diskUser').findOne({username});
+    const authInfo = await diskDB.collection('User').findOne({username});
     if (authInfo) {
         throw new Error('账号已注册');
     }
-    await wechatDB.collection('diskUser').insertOne(userInfo); 
+    await diskDB.collection('User').insertOne(userInfo); 
     return returnData;
 }
 
@@ -41,30 +40,21 @@ async function postUserRegister(username, password) {
  */
 async function postUserLogin(username, password) {
     const returnData = {};
-    const user = await wechatDB.collection('diskUser').findOne({username});
-    if(!user) {
-        throw new Error('账号密码错误')
-    }
+    const user = await diskDB.collection('User').findOne({username});
     
+    if(!user) {
+        throw new Error('账号或密码错误')
+    }
     const isTrue = await argonVerification(password, user.password)
     if(isTrue) {
         const payload = {
-            username
+            user
         }
-        returnData.token = await encodeJwt(payload)
+        return returnData.token = await encodeJwt(payload)
     }
-    return returnData;
+    throw new Error('账号或密码错误')
 }
 
-/**
- * 用户获取百度网盘二维码
- */
- async function getDiskQRcode() {
-    const returnData = {};
-    const data = await axios.get(`http://openapi.baidu.com/oauth/2.0/authorize?response_type=code&client_id=Xo5gDASeVZRxHArna5hviweIGkllqetf&redirect_uri=oob&scope=basic,netdisk&display=tv&qrcode=1&force_login=1`)
-    
-    return data;
-}
 
 /**
  * 用户通过code换取access_token和refresh_token
@@ -74,8 +64,13 @@ async function postUserLogin(username, password) {
  */
  async function bindDisk(username, code) {
     const returnData = {};
-    const data = await axios.get(`https://openapi.baidu.com/oauth/2.0/token?grant_type=authorization_code&code=${code}&client_id=Xo5gDASeVZRxHArna5hviweIGkllqetf&client_secret=GVpNxBBQ3P79GTcGWPfnds5jk7Um6EM8&redirect_uri=oob`)
-    await wechatDB.collection('diskUser').updateOne({username}, {$set:{ access_token: data.data.access_token, refresh_token: data.data.refresh_token}})
+    const {data} = await utils.bdapis.code2token(code);
+    await diskDB.collection('DiskUser').insertOne({ 
+        username,
+        expires_in: data.expires_in, 
+        access_token: data.access_token, 
+        refresh_token: data.refresh_token
+    })
     return returnData;
 }
 
@@ -84,20 +79,29 @@ async function postUserLogin(username, password) {
  * @param {*} username 
  */
 async function getUserInfo(username) {
-    try {
-        await diskServ.getUserinfo(username)
-    } catch(err) {
-        
-    }
-    const user = await wechatDB.collection('diskUser').findOne({username})
+    const user = await diskDB.collection('User').findOne({username})
     if(!user) {
         throw new Error('用户不存在')
     }
     return user
 }
+
+/**
+ * 获取用户关联的百度网盘账号
+ * @param {*} username 
+ */
+ async function getUserDisks(username) {
+    const user = await diskDB.collection('User').findOne({username});
+    if(!user) {
+        throw new Error('用户不存在')
+    }
+    const disks = await diskDB.collection('DiskUser').find({username: user.username}).toArray();
+    return {list: disks};
+}
 module.exports = {
     postUserRegister,
     postUserLogin,
     bindDisk,
-    getUserInfo
+    getUserInfo,
+    getUserDisks,
 };
