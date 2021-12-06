@@ -5,21 +5,10 @@ const diskServ = require('../modules/disk');
 const returnCode = require('../utils/returnCodes');
 const { reqHandler } = require('../utils/reqHandler');
 
-/* 获取网盘用户信息*/
-router.get('/userinfo', reqHandler(async function(req, res) {
-    const result = await diskServ.getUserinfo(req.user.username);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
-}));
-
-/* 获取网盘容量信息*/
-router.get('/diskinfo', reqHandler(async function(req, res) {
-    const result = await diskServ.getDiskinfo(req.user.username);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
-}));
-
-/* 获取网盘文件列表*/
+/* 根据网盘id获取网盘文件列表*/
 router.get('/disklist', reqHandler(async function(req, res) {
-    const result = await diskServ.getDisklist(req.user.username);
+    const {id, order= 'name', dir= '/', web='web', folder=0, showempty=1} = req.query;
+    const result = await diskServ.getDisklist(req.user.username, id, dir, order,web, folder,showempty);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 

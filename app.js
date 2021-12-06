@@ -1,3 +1,4 @@
+const path = require('path');
 const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -18,19 +19,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(urlecodes);
-// app.use(express.static(path.join(__dirname, 'public')));
 app.all('*', tokenAuth, )
 app.all('*', (req, res, next)=> {
     logger.info(`Method:${req.method} from ${req.ip.slice(7)}${req.path}`);
     next();
 });
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'static')));
+
 app.use('/user', userRotes);
 app.use('/disk', diskRotes);
-app.get('/oauth_redirect', async(req, res, next) => {
-    req.query.code
-    res.end()
-})
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));

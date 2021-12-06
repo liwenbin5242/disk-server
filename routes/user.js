@@ -5,21 +5,54 @@ const userServ = require('../modules/user');
 const returnCode = require('../utils/returnCodes');
 const { reqHandler } = require('../utils/reqHandler');
 
-/* 用户注册*/
+/**
+ * @api {post} /user/register 用户注册
+ * @apiName 用户注册
+ * @apiGroup 用户模块
+ *
+ * @apiParam {String} username 用户名.
+ * @apiParam {String} password 密码.
+ *
+ * @apiSuccess {String} code 响应码, 如： 200, 0，……
+ * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {Object} data 数据对象数组
+ */
 router.post('/register', reqHandler(async function(req, res) {
     const {username, password} = req.body;
     const result = await userServ.postUserRegister(username, password);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
-/* 用户登录获取token*/
+/**
+ * @api {post} /user/login 用户登录获取token
+ * @apiName 用户登录
+ * @apiGroup 用户模块
+ *
+ * @apiParam {String} username 用户名.
+ * @apiParam {String} password 密码.
+ *
+ * @apiSuccess {String} code 响应码, 如： 200, 0，……
+ * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {Object} data 数据对象数组
+ */
 router.post('/login', reqHandler(async function(req, res) {
     const {username, password} = req.body;
     const result = await userServ.postUserLogin(username, password);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
-/* 用户登出*/
+/**
+ * @api {post} /user/logout 用户登出
+ * @apiName 用户登录
+ * @apiGroup 用户模块
+ *
+ * @apiParam {String} username 用户名.
+ * @apiParam {String} password 密码.
+ *
+ * @apiSuccess {String} code 响应码, 如： 200, 0，……
+ * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {Object} data 数据对象数组
+ */
 router.post('/logout', reqHandler(async function(req, res) {
     const {username, password} = req.body;
     // const result = await userServ.postUserLogout(username, password);
@@ -40,10 +73,15 @@ router.get('/disks', reqHandler(async function(req, res) {
 
 /*用户通过code换取access_token和refresh_token */
 router.post('/disks/code', reqHandler(async function(req, res) {
-    const {code} = req.body;
+    const {code} = req.query;
     const result = await userServ.bindDisk(req.user.username, code);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
-
+/*用户解绑网盘 */
+router.delete('/disks/:id', reqHandler(async function(req, res) {
+    const {id} = req.params;
+    const result = await userServ.deleteDisk(req.user.username, id);
+    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+}));
 module.exports = router;

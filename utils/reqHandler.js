@@ -7,6 +7,7 @@ const errCode = require('./errCodes')
  */
 
 const {logger} = require('./logger');
+
 exports.reqHandler = function reqHandler(handler) {
     return async (req, resp, next) => {
         try {
@@ -16,7 +17,7 @@ exports.reqHandler = function reqHandler(handler) {
                 logLevel: 'error',
                 errStack: err.stack || err,
             });
-            logger.error(err);
+            logger.error(err.stack);
             return resp.json({code: errCode[err.code] || errCode['INTERNAL_ERR'], msg: err.message, data:{}});
         }
     };

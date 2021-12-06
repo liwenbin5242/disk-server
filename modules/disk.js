@@ -8,6 +8,8 @@ const diskDB = mongodber.use('disk');
 const moment = require('moment');
 const axios = require('axios');
 const utils = require('../lib/utils');
+const { ObjectId } = require('mongodb');
+const { util } = require('config');
 
 moment.locale('zh-cn');
 
@@ -59,15 +61,15 @@ async function getUserinfo(username) {
  * 获取网盘文件列表
  * @param {账号} username 
  */
- async function getDisklist(username) {
-    const returnData = {};
-   
-    const authInfo = await diskDB.collection('diskUser').findOne({username});
-    if (!authInfo) {
-        throw new Error('用户不存在');
+ async function getDisklist(username, id,dir, order,web, folder,showempty) {
+    let returnData = {};
+    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    if (!disk) {
+        throw new Error('网盘不存在');
     }
-    const data = await axios.get(`https://pan.baidu.com/rest/2.0/xpan/file?method=list&access_token=${authInfo.access_token}&web=web`)
-      return data.data
+    const data = await utils.bdapis.getFileListByToken(disk.access_token,dir, order,web, folder,showempty)
+    returnData = data.data
+    return returnData
 
 }
 

@@ -8,19 +8,19 @@ module.exports = {
     SECRET: 'baidudicksecret',
     MONGODBS: {
         admin: {
-            host: 'mongodb://81.70.203.247:7001/admin',
+            host: 'mongodb://81.70.203.247:4567/admin',
             // user: 'liwenbin01', 超级管理员01
             // password: 'lilaoshuan!!!$$$'
             user: 'liwenbin',   // 超级管理员
             password: 'lilaoshuan!@#123'
         },
         wechat: {
-            host: 'mongodb://81.70.203.247:7001/wechat',
+            host: 'mongodb://81.70.203.247:4567/wechat',
             user: '15810185602',
             password: 'liwenbin($%@>($%#'
         },
         disk: {
-            host: 'mongodb://81.70.203.247:7001/disk',
+            host: 'mongodb://81.70.203.247:4567/disk',
             user: '15810185602',
             password: 'liwenbin($%@>($%#'
         }
