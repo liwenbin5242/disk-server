@@ -24,8 +24,11 @@ async function postUserRegister(username, password) {
     const userInfo = {
         username,
         password: await argonEncryption(password),
+        phone: '',
         name: '',
         avatar: '',
+        utime: new Date,
+        ctime: new Date
     };
     if (authInfo) {
         throw new Error('账号已注册');

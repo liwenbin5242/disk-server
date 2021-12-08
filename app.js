@@ -27,8 +27,8 @@ app.all('*', (req, res, next)=> {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'static')));
 
-app.use('/user', userRotes);
-app.use('/disk', diskRotes);
+app.use('/api/user', userRotes);
+app.use('/api/disk', diskRotes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
