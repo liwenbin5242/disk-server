@@ -6,7 +6,7 @@ const returnCode = require('../utils/returnCodes');
 const { reqHandler } = require('../utils/reqHandler');
 
 /**
- * @api {get} /disk/disklist 01.网盘文件列表
+ * @api {get} /disk/filelist 01.网盘文件列表
  * @apiName 根据网盘id获取网盘文件列表
  * @apiGroup 网盘模块
  *
@@ -17,9 +17,9 @@ const { reqHandler } = require('../utils/reqHandler');
  * @apiSuccess {String} msg 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
-router.get('/disklist', reqHandler(async function(req, res) {
+router.get('/filelist', reqHandler(async function(req, res) {
     const {id, order= 'name', dir= '/', web='web', folder=0, showempty=1} = req.query;
-    const result = await diskServ.getDisklist(req.user.username, id, dir, order,web, folder,showempty);
+    const result = await diskServ.getDisklist(req.user.username, id, dir, order, web, folder, showempty);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
