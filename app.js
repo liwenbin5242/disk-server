@@ -8,6 +8,7 @@ const { urlecodes } = require('./lib/utils')
 
 const userRotes = require('./routes/user');
 const diskRotes = require('./routes/disk');
+const menuRotes = require('./routes/menu');
 const app = express();
 const cors = require('cors')
 
@@ -19,16 +20,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(urlecodes);
-app.all('*', tokenAuth, )
 app.all('*', (req, res, next)=> {
     logger.info(`Method:${req.method} from ${req.ip.slice(7)}${req.path}`);
     next();
 });
+app.all('*', tokenAuth, )
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.use('/api/user', userRotes);
 app.use('/api/disk', diskRotes);
+app.use('/api/menu', menuRotes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

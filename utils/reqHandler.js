@@ -1,7 +1,7 @@
 const errCode = require('./errCodes')
 /**
  * 默认express错误处理包裹
- * @param {String} msg
+ * @param {String} message
  * @param {function} handler
  * @returns {function} callback
  */
@@ -13,12 +13,8 @@ exports.reqHandler = function reqHandler(handler) {
         try {
             await handler(req, resp, next);
         } catch (err) {
-            const errMsg = Object.assign(req.errMsg || {}, {
-                logLevel: 'error',
-                errStack: err.stack || err,
-            });
             logger.error(err.stack);
-            return resp.json({code: errCode[err.code] || errCode['INTERNAL_ERR'], msg: err.message, data:{}});
+            return resp.json({code: errCode[err.message] || errCode['INTERNAL_ERR'], message: err.message, data:{}});
         }
     };
 };

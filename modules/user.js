@@ -10,6 +10,7 @@ const moment = require('moment');
 const { ObjectID } = require('mongodb');
 const redis = require('../utils/rediser');
 const _ = require('lodash');
+const errCode = require('../utils/errCodes')
 
 moment.locale('zh-cn');
 
@@ -54,6 +55,8 @@ async function postUserLogin(username, password) {
             user
         }
         returnData.token = await encodeJwt(payload)
+        returnData.username = username
+        returnData.userId = user._id
         return returnData
     }
     throw new Error('账号或密码错误')

@@ -6,6 +6,8 @@ module.exports = {
         NO_ITEM_NOW: 1,                     // 成功，但是现阶段确实没有数据
     
         // 
+        AUTH_ERR: -1,                                   // 认证错误
+        '账号或密码错误': -1,                            // 认证错误
         INTERNAL_ERR: 1000,                             // 内部错误
         PARAM_ERR: 1001,                                // 参数错误
         GLOBAL_ERR: 1002,                               // 全局异常
