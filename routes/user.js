@@ -52,14 +52,13 @@ router.post('/login', reqHandler(async function(req, res) {
  * @apiSuccess {Object} data 数据对象数组
  */
 router.post('/logout', reqHandler(async function(req, res) {
-    const {username, password} = req.body;
+    // const {username, password} = req.body;
     // const result = await userServ.postUserLogout(username, password);
     res.json({code: returnCode.SUCCESS, data: {}, message: true});
 }));
 
-
 /**
- * @api {get} /user/info 04.获取用户基本信息
+ * @api {get} /user/userInfo 04.获取用户基本信息
  * @apiName 获取用户基本信息
  * @apiGroup 用户模块
  *
@@ -68,7 +67,7 @@ router.post('/logout', reqHandler(async function(req, res) {
  * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
-router.get('/info', reqHandler(async function(req, res) {
+router.get('/userInfo', reqHandler(async function(req, res) {
     const result = await userServ.getUserInfo(req.user.username);
     res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));

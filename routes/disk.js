@@ -6,7 +6,7 @@ const returnCode = require('../utils/returnCodes');
 const { reqHandler } = require('../utils/reqHandler');
 
 /**
- * @api {get} /disk/filelist 01.网盘文件列表
+ * @api {get} /disk/list 01.网盘文件列表
  * @apiName 根据网盘id获取网盘文件列表
  * @apiGroup 网盘模块
  *
@@ -17,8 +17,8 @@ const { reqHandler } = require('../utils/reqHandler');
  * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
-router.get('/filelist', reqHandler(async function(req, res) {
-    const {id, order= 'name', dir= '/', web='web', folder=0, showempty=1} = req.query;
+router.get('/list', reqHandler(async function(req, res) {
+    const {id = '', order = 'time', dir = '/', web = 'web', folder = 0, showempty = 1} = req.query;
     const result = await diskServ.getDisklist(req.user.username, id, dir, order, web, folder, showempty);
     res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
@@ -37,7 +37,7 @@ router.get('/filelist', reqHandler(async function(req, res) {
  * @apiSuccess {Object} data 数据对象数组
  */
 router.get('/disklistall', reqHandler(async function(req, res) {
-    const path = req.query.path || '/'
+    const path = req.query.path || '/';
     const result = await diskServ.getDisklistall(req.user.username, path);
     res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));

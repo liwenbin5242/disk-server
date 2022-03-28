@@ -8,6 +8,7 @@
     "doc": "apidoc -i routes/ -o static/apidoc/"
   },
   "dependencies": {
+    "fluent-ffmpeg": "2.1.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
