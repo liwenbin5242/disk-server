@@ -93,16 +93,16 @@ async function getUserinfo(username) {
  * 搜索文件
  * @param {账号} username 
  */
- async function getDiskSearch(username, key, dir) {
+ async function getDiskSearch(username, id, key, dir) {
     const returnData = {};
    
-    const authInfo = await diskDB.collection('diskUser').findOne({username});
-    if (!authInfo) {
-        throw new Error('用户不存在');
+    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    if (!disk) {
+        throw new Error('网盘不存在');
     }
-    const data = await axios.get(`https://pan.baidu.com/rest/2.0/xpan/file?method=search&access_token=${authInfo.access_token}&recursion=1&dir=${dir||'/'}&web=1&key=${key}`)
-      return data.data
-
+    const data = await utils.bdapis.searchFileByToken(disk.access_token,key,dir, )
+    returnData = data.data
+    return returnData
 }
 
 
