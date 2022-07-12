@@ -76,6 +76,7 @@ async function getUserinfo(username) {
 /**
  * 获取网盘递归文件列表
  * @param {账号} username 
+ * @param {路径} path 
  */
  async function getDisklistall(username, path) {
     const returnData = {};
@@ -92,8 +93,44 @@ async function getUserinfo(username) {
 /**
  * 搜索文件
  * @param {账号} username 
+ * @param {网盘id} id 
+ * @param {搜索关键词} key 
+ * @param {目录} dir 
  */
  async function getDiskSearch(username, id, key, dir) {
+    const returnData = {};
+   
+    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    if (!disk) {
+        throw new Error('网盘不存在');
+    }
+    const data = await utils.bdapis.searchFileByToken(disk.access_token,key,dir, )
+    returnData = data.data
+    return returnData
+}
+
+/**
+ * 文件信息
+ * @param {账号} username 
+ * @param {文件的fsids} fsids 
+ */
+ async function getFiles(username, id,fsids) {
+    const returnData = {};
+    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    if (!disk) {
+        throw new Error('网盘不存在');
+    }
+    const data = await utils.bdapis.getFilemetasByToken(disk.access_token,fsids )
+    returnData = data.data
+    return returnData
+}
+
+/**
+ * 文件管理（修改，删除，重命名，移动）
+ * @param {账号} username 
+ * @param {id} id 
+ */
+ async function fileManage(username, id, key, dir) {
     const returnData = {};
    
     const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
@@ -111,5 +148,7 @@ module.exports = {
     getDiskinfo,
     getDisklist,
     getDisklistall,
-    getDiskSearch
+    getDiskSearch,
+    getFiles,
+    fileManage
 };

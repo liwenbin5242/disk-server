@@ -10,8 +10,7 @@ const { reqHandler } = require('../utils/reqHandler');
  * @apiName 根据网盘id获取网盘文件列表
  * @apiGroup 网盘模块
  *
- * @apiParam {String} username 用户名.
- * @apiParam {String} password 密码.
+ * @apiParam {String} id 网盘id.
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
  * @apiSuccess {String} msg 响应信息
@@ -29,8 +28,7 @@ router.get('/filelist', reqHandler(async function(req, res) {
  * @apiName 获取网盘递归文件列表
  * @apiGroup 网盘模块
  *
- * @apiParam {String} username 用户名.
- * @apiParam {String} password 密码.
+ * @apiParam {String} path 路径.
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
  * @apiSuccess {String} msg 响应信息
@@ -42,11 +40,23 @@ router.get('/disklistall', reqHandler(async function(req, res) {
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 
-/* 搜索文件*/
+/* */
+/**
+ * @api {get} /disk/file 02.查询文件信息
+ * @apiName 查询文件信息
+ * @apiGroup 网盘模块
+ *
+ * @apiParam {String} fsids 文件id.
+ * @apiParam {String} id 网盘id.
+ *
+ * @apiSuccess {String} code 响应码, 如： 200, 0，……
+ * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {Object} data 数据对象数组
+ */
 router.get('/file', reqHandler(async function(req, res) {
-    const key = req.query.key || ''; 
-    const dir = req.query.dir; 
-    const result = await diskServ.getDisklistall(req.user.username, key, dir);
+    const fsids = req.query.fsids ; 
+    const id = req.query.id ; 
+    const result = await diskServ.getFiles(req.user.username, id, fsids);
     res.json({code: returnCode.SUCCESS, data: result, msg: ''});
 }));
 

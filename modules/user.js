@@ -100,6 +100,19 @@ async function getUserInfo(username) {
 }
 
 /**
+ * 获取用户基本信息
+ * @param {*} username 
+ */
+ async function updateUserInfo(username, avatar,name, phone) {
+    const user = await diskDB.collection('User').updateOne({username})
+    if(!user) {
+        throw new Error('用户不存在')
+    }
+    delete user.password;
+    return user
+}
+
+/**
  * 获取用户关联的百度网盘账号
  * @param {*} username 
  */
