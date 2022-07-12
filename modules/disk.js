@@ -142,14 +142,13 @@ async function getDisklistall(username, path) {
  * @param {账号} username 
  * @param {id} id 
  */
- async function fileManage(username, id, key, dir) {
+ async function fileManage(username, id, opera, filelist) {
     const returnData = {};
-   
     const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
     if (!disk) {
         throw new Error('网盘不存在');
     }
-    const data = await utils.bdapis.searchFileByToken(disk.access_token,key,dir, )
+    const data = await utils.bdapis.fileManager(disk.access_token, opera, filelist)
     returnData = data.data
     return returnData
 }
