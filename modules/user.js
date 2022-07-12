@@ -5,11 +5,12 @@ const { argonEncryption, argonVerification } = require('../lib/utils');
 const { encodeJwt } = require('../lib/utils');
 const mongodber = require('../utils/mongodber');
 const diskDB = mongodber.use('disk');
-const utils = require('../lib/utils')
+const utils = require('../lib/utils');
 const moment = require('moment');
 const { ObjectID } = require('mongodb');
 const redis = require('../utils/rediser');
 const _ = require('lodash');
+const errCode = require('../utils/errCodes');
 
 moment.locale('zh-cn');
 
@@ -45,20 +46,21 @@ async function postUserRegister(username, password) {
 async function postUserLogin(username, password) {
     const returnData = {};
     const user = await diskDB.collection('User').findOne({username});
-    if(!user) {
-        throw new Error('账号或密码错误')
+    if (!user) {
+        throw new Error('账号或密码错误');
     }
-    const isTrue = await argonVerification(password, user.password)
-    if(isTrue) {
+    const isTrue = await argonVerification(password, user.password);
+    if (isTrue) {
         const payload = {
             user
-        }
-        returnData.token = await encodeJwt(payload)
-        return returnData
+        };
+        returnData.token = await encodeJwt(payload);
+        returnData.username = username;
+        returnData.userId = user._id;
+        return returnData;
     }
-    throw new Error('账号或密码错误')
+    throw new Error('账号或密码错误');
 }
-
 
 /**
  * 用户通过code换取access_token和refresh_token
@@ -66,12 +68,12 @@ async function postUserLogin(username, password) {
  * @param {*} username 
  * @returns 
  */
- async function bindDisk(username, code) {
+async function bindDisk(username, code) {
     const returnData = {};
     const {data} = await utils.bdapis.code2token(code);
     const bduserinfo = await utils.bdapis.getbdUserByToken(data.access_token);
-    redis.set(bduserinfo.data.uk, data.access_token, data.expires_in)
-    await diskDB.collection('DiskUser').findOneAndUpdate({uk: bduserinfo.data.uk,},{$set:{ 
+    redis.set(bduserinfo.data.uk, data.access_token, data.expires_in);
+    await diskDB.collection('DiskUser').findOneAndUpdate({uk: bduserinfo.data.uk, }, {$set: { 
         username,
         avatar_url: bduserinfo.data.avatar_url,
         baidu_name: bduserinfo.data.baidu_name,
@@ -82,7 +84,7 @@ async function postUserLogin(username, password) {
         refresh_token: data.refresh_token,
         scope: data.scope,
         uptime: new Date
-    }},{upsert: true})
+    }}, {upsert: true});
     return returnData;
 }
 
@@ -91,12 +93,12 @@ async function postUserLogin(username, password) {
  * @param {*} username 
  */
 async function getUserInfo(username) {
-    const user = await diskDB.collection('User').findOne({username})
-    if(!user) {
-        throw new Error('用户不存在')
+    const user = await diskDB.collection('User').findOne({username});
+    if (!user) {
+        throw new Error('用户不存在');
     }
     delete user.password;
-    return user
+    return user;
 }
 
 /**
@@ -116,38 +118,38 @@ async function getUserInfo(username) {
  * 获取用户关联的百度网盘账号
  * @param {*} username 
  */
- async function getUserDisks(username) {
+async function getUserDisks(username) {
     const user = await diskDB.collection('User').findOne({username});
-    if(!user) {
-        throw new Error('用户不存在')
+    if (!user) {
+        throw new Error('用户不存在');
     }
     const disks = await diskDB.collection('DiskUser').find({username: user.username}).toArray();
-    let disksInfo = await utils.promiseTasks(disks,'getbdUserByToken');
-    const diskQuota = await utils.promiseTasks(disks,'getQuotaByToken');
-    disksInfo = _.zipWith(disksInfo,diskQuota, disks, (a,b,c) =>{
+    let disksInfo = await utils.promiseTasks(disks, 'getbdUserByToken');
+    const diskQuota = await utils.promiseTasks(disks, 'getQuotaByToken');
+    disksInfo = _.zipWith(disksInfo, diskQuota, disks, (a, b, c) =>{
         return {
-            info:a,
-            quota:b,
-            id:{id: c._id.toString()}
-        }
-    })
+            info: a,
+            quota: b,
+            id: {id: c._id.toString()}
+        };
+    });
     return {
         total: disks.length, 
         list: disksInfo.map(d => {
             return Object.assign(d.info.data, d.quota.data, d.id);
-    })};
+        })};
 }
 
 /**
  * 解绑用户关联的百度网盘账号
  * @param {*} username 
  */
-async function deleteDisk(username,id) {
+async function deleteDisk(username, id) {
     const user = await diskDB.collection('User').findOne({username});
-    if(!user) {
-        throw new Error('用户不存在')
+    if (!user) {
+        throw new Error('用户不存在');
     }
-    await diskDB.collection('DiskUser').remove({_id: ObjectID(id),username});
+    await diskDB.collection('DiskUser').remove({_id: ObjectID(id), username});
     return {};
 }
 module.exports = {

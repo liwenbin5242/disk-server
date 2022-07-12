@@ -40,7 +40,7 @@ module.exports = {
     CORS: [
         'http://localhost:9528'
     ],
-    BaiDuDisk:{
+    BaiDuDisk: {
         clientid: 'Xo5gDASeVZRxHArna5hviweIGkllqetf',
         clientsecret: 'GVpNxBBQ3P79GTcGWPfnds5jk7Um6EM8',
         signkey: 'n39*as6rSaWPj6s$9wNd4eGlUQOA1C1z',

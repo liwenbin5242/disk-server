@@ -14,13 +14,13 @@ const { reqHandler } = require('../utils/reqHandler');
  * @apiParam {String} password 密码.
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
 router.post('/register', reqHandler(async function(req, res) {
     const {username, password} = req.body;
     const result = await userServ.postUserRegister(username, password);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+    res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
 /**
@@ -32,13 +32,13 @@ router.post('/register', reqHandler(async function(req, res) {
  * @apiParam {String} password 密码.
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
 router.post('/login', reqHandler(async function(req, res) {
     const {username, password} = req.body;
     const result = await userServ.postUserLogin(username, password);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+    return res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
 /**
@@ -48,29 +48,28 @@ router.post('/login', reqHandler(async function(req, res) {
  *
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
 router.post('/logout', reqHandler(async function(req, res) {
-    const {username, password} = req.body;
+    // const {username, password} = req.body;
     // const result = await userServ.postUserLogout(username, password);
-    res.json({code: returnCode.SUCCESS, data: {}, msg: ''});
+    res.json({code: returnCode.SUCCESS, data: {}, message: true});
 }));
 
-
 /**
- * @api {get} /user/info 04.获取用户基本信息
+ * @api {get} /user/userInfo 04.获取用户基本信息
  * @apiName 获取用户基本信息
  * @apiGroup 用户模块
  *
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
-router.get('/info', reqHandler(async function(req, res) {
+router.get('/userInfo', reqHandler(async function(req, res) {
     const result = await userServ.getUserInfo(req.user.username);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+    res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
 /**
@@ -80,13 +79,13 @@ router.get('/info', reqHandler(async function(req, res) {
  *
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
 
 router.get('/disks', reqHandler(async function(req, res) {
     const result = await userServ.getUserDisks(req.user.username);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+    res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
 /**
@@ -97,13 +96,13 @@ router.get('/disks', reqHandler(async function(req, res) {
  * @apiParam {String} code 百度回调url code.
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
 router.post('/disks/code', reqHandler(async function(req, res) {
     const {code} = req.query;
     const result = await userServ.bindDisk(req.user.username, code);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+    res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
 /* */
@@ -115,12 +114,12 @@ router.post('/disks/code', reqHandler(async function(req, res) {
  * @apiParam {String} code 百度回调url code.
  *
  * @apiSuccess {String} code 响应码, 如： 200, 0，……
- * @apiSuccess {String} msg 响应信息
+ * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
 router.delete('/disks/:id', reqHandler(async function(req, res) {
     const {id} = req.params;
     const result = await userServ.deleteDisk(req.user.username, id);
-    res.json({code: returnCode.SUCCESS, data: result, msg: ''});
+    res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 module.exports = router;
