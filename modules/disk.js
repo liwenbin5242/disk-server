@@ -34,7 +34,6 @@ async function getUserinfo(username) {
         });
     });
     await diskDB.collection('diskUser').updateOne({username}, {$set: {disks}});
-
     return data.data;
 }
 
@@ -44,7 +43,7 @@ async function getUserinfo(username) {
  */
 async function getDiskinfo(username) {
     const returnData = { list: []};
-    const disks = await diskDB.collection('DiskUser').find({username}).toArray();
+    const disks = await diskDB.collection('disks').find({username}).toArray();
     if (!disks.length) {
         return returnData;
     }
@@ -60,7 +59,7 @@ async function getDiskinfo(username) {
  */
 async function getDisklist(username, id, dir, order = 'time', web, folder, showempty) {
     let returnData = {};
-    const disk = await diskDB.collection('DiskUser').findOne({ username});
+    const disk = await diskDB.collection('disks').findOne({ username});
     if (!disk) {
         throw new Error('网盘不存在');
     }
@@ -112,7 +111,7 @@ async function getDisklistall(username, path) {
  async function getDiskSearch(username, id, key, dir) {
     const returnData = {};
    
-    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    const disk = await diskDB.collection('disks').findOne({_id: ObjectId(id), username});
     if (!disk) {
         throw new Error('网盘不存在');
     }
@@ -128,7 +127,7 @@ async function getDisklistall(username, path) {
  */
  async function getFiles(username, id,fsids) {
     const returnData = {};
-    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    const disk = await diskDB.collection('disks').findOne({_id: ObjectId(id), username});
     if (!disk) {
         throw new Error('网盘不存在');
     }
@@ -144,7 +143,7 @@ async function getDisklistall(username, path) {
  */
  async function fileManage(username, id, opera, filelist) {
     const returnData = {};
-    const disk = await diskDB.collection('DiskUser').findOne({_id: ObjectId(id), username});
+    const disk = await diskDB.collection('disks').findOne({_id: ObjectId(id), username});
     if (!disk) {
         throw new Error('网盘不存在');
     }
@@ -153,6 +152,24 @@ async function getDisklistall(username, path) {
     return returnData
 }
 
+/**
+ * 网盘绑定cookie
+ * @param {账号} username 
+ * @param {id} id 
+ * @param {cookie} id 
+ */
+ async function addCookie(username, id, cookie) {
+    const returnData = {};
+    const disk = await diskDB.collection('disks').findOne({_id: ObjectId(id), username});
+    if (!disk) {
+        throw new Error('网盘不存在');
+    }
+    const data = await utils.bdapis.fileManager(disk.access_token, opera, filelist)
+    returnData = data.data
+    return returnData
+}
+
+
 module.exports = {
     getUserinfo,
     getDiskinfo,
@@ -160,5 +177,6 @@ module.exports = {
     getDisklistall,
     getDiskSearch,
     getFiles,
-    fileManage
+    fileManage,
+    addCookie
 };

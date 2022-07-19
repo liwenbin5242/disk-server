@@ -21,20 +21,25 @@ moment.locale('zh-cn');
  */
 async function postUserRegister(username, password) {
     const returnData = {};
-    const authInfo = await diskDB.collection('User').findOne({username});
+    const authInfo = await diskDB.collection('users').findOne({username});
+    const _id = ObjectID(utils.md5(username))
     const userInfo = {
+        _id,
         username,
         password: await argonEncryption(password),
         phone: '',
         name: '',
         avatar: '',
+        inviters:[],
+        role: 'visitor',   // admin, member, visitor,
         utime: new Date,
-        ctime: new Date
+        ctime: new Date,
+        expires: new Date(3*24*60*60*1000 +new Date())
     };
     if (authInfo) {
         throw new Error('账号已注册');
     }
-    await diskDB.collection('User').insertOne(userInfo); 
+    await diskDB.collection('users').insertOne(userInfo); 
     return returnData;
 }
 
@@ -45,7 +50,7 @@ async function postUserRegister(username, password) {
  */
 async function postUserLogin(username, password) {
     const returnData = {};
-    const user = await diskDB.collection('User').findOne({username});
+    const user = await diskDB.collection('users').findOne({username});
     if (!user) {
         throw new Error('账号或密码错误');
     }
@@ -73,7 +78,8 @@ async function bindDisk(username, code) {
     const {data} = await utils.bdapis.code2token(code);
     const bduserinfo = await utils.bdapis.getbdUserByToken(data.access_token);
     redis.set(bduserinfo.data.uk, data.access_token, data.expires_in);
-    await diskDB.collection('DiskUser').findOneAndUpdate({uk: bduserinfo.data.uk, }, {$set: { 
+    const _id = ObjectID(utils.md5(`${username}|${uk}`))
+    await diskDB.collection('disks').findOneAndUpdate({_id }, {$set: { 
         username,
         avatar_url: bduserinfo.data.avatar_url,
         baidu_name: bduserinfo.data.baidu_name,
@@ -83,6 +89,9 @@ async function bindDisk(username, code) {
         access_token: data.access_token, 
         refresh_token: data.refresh_token,
         scope: data.scope,
+        cookies:'',
+        ctm: new Date,
+        utm: new Date,
         uptime: new Date
     }}, {upsert: true});
     return returnData;
@@ -93,7 +102,7 @@ async function bindDisk(username, code) {
  * @param {*} username 
  */
 async function getUserInfo(username) {
-    const user = await diskDB.collection('User').findOne({username});
+    const user = await diskDB.collection('users').findOne({username});
     if (!user) {
         throw new Error('用户不存在');
     }
@@ -102,16 +111,12 @@ async function getUserInfo(username) {
 }
 
 /**
- * 获取用户基本信息
+ * 更新用户基本信息
  * @param {*} username 
  */
  async function updateUserInfo(username, avatar,name, phone) {
-    const user = await diskDB.collection('User').updateOne({username})
-    if(!user) {
-        throw new Error('用户不存在')
-    }
-    delete user.password;
-    return user
+    await diskDB.collection('users').updateOne({username}, {$set:{avatar,name, phone}})
+    return {}
 }
 
 /**
@@ -119,11 +124,11 @@ async function getUserInfo(username) {
  * @param {*} username 
  */
 async function getUserDisks(username) {
-    const user = await diskDB.collection('User').findOne({username});
+    const user = await diskDB.collection('users').findOne({username});
     if (!user) {
         throw new Error('用户不存在');
     }
-    const disks = await diskDB.collection('DiskUser').find({username: user.username}).toArray();
+    const disks = await diskDB.collection('disks').find({username: user.username}).toArray();
     let disksInfo = await utils.promiseTasks(disks, 'getbdUserByToken');
     const diskQuota = await utils.promiseTasks(disks, 'getQuotaByToken');
     disksInfo = _.zipWith(disksInfo, diskQuota, disks, (a, b, c) =>{
@@ -145,11 +150,11 @@ async function getUserDisks(username) {
  * @param {*} username 
  */
 async function deleteDisk(username, id) {
-    const user = await diskDB.collection('User').findOne({username});
+    const user = await diskDB.collection('users').findOne({username});
     if (!user) {
         throw new Error('用户不存在');
     }
-    await diskDB.collection('DiskUser').remove({_id: ObjectID(id), username});
+    await diskDB.collection('disks').remove({_id: ObjectID(id), username});
     return {};
 }
 module.exports = {
@@ -157,6 +162,7 @@ module.exports = {
     postUserLogin,
     bindDisk,
     getUserInfo,
+    updateUserInfo,
     getUserDisks,
     deleteDisk,
 };

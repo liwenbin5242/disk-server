@@ -58,7 +58,7 @@ router.post('/logout', reqHandler(async function(req, res) {
 }));
 
 /**
- * @api {get} /user/userInfo 04.获取用户基本信息
+ * @api {get} /user/info 04.获取用户基本信息
  * @apiName 获取用户基本信息
  * @apiGroup 用户模块
  *
@@ -67,13 +67,31 @@ router.post('/logout', reqHandler(async function(req, res) {
  * @apiSuccess {String} message 响应信息
  * @apiSuccess {Object} data 数据对象数组
  */
-router.get('/userInfo', reqHandler(async function(req, res) {
+ router.get('/info', reqHandler(async function(req, res) {
     const result = await userServ.getUserInfo(req.user.username);
     res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
 /**
- * @api {get} /user/disks 05.获取用户关联网盘信息
+ * @api {post} /user/info 05.修改用户基本信息
+ * @apiName 获取用户基本信息
+ * @apiGroup 用户模块
+ * @apiParam {String} avatar 
+ * @apiParam {String} name 
+ * @apiParam {String} phone 
+ * 
+ * @apiSuccess {String} code 响应码, 如： 200, 0，……
+ * @apiSuccess {String} message 响应信息
+ * @apiSuccess {Object} data 数据对象数组
+ */
+ router.post('/info', reqHandler(async function(req, res) {
+    const { avatar,name, phone} = req.body;
+    const result = await userServ.updateUserInfo(req.user.username, avatar,name, phone);
+    res.json({code: returnCode.SUCCESS, data: result, message: true});
+}));
+
+/**
+ * @api {get} /user/disks 06.获取用户关联网盘信息
  * @apiName 获取用户关联网盘信息
  * @apiGroup 用户模块
  *
@@ -89,7 +107,7 @@ router.get('/disks', reqHandler(async function(req, res) {
 }));
 
 /**
- * @api {post} /user/disks/code  06.通过code换取access_token
+ * @api {post} /user/disks/code  07.通过code换取access_token
  * @apiName 用户通过code换取access_token和refresh_token
  * @apiGroup 用户模块
  *
@@ -105,9 +123,8 @@ router.post('/disks/code', reqHandler(async function(req, res) {
     res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
 
-/* */
 /**
- * @api {delete} /user/disks/:id  07.用户解绑网盘
+ * @api {delete} /user/disks/:id  08.用户解绑网盘
  * @apiName 用户解绑网盘
  * @apiGroup 用户模块
  *
@@ -122,4 +139,5 @@ router.delete('/disks/:id', reqHandler(async function(req, res) {
     const result = await userServ.deleteDisk(req.user.username, id);
     res.json({code: returnCode.SUCCESS, data: result, message: true});
 }));
+
 module.exports = router;
